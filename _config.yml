@@ -64,9 +64,16 @@ pagination_dir: page
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: even
-
+  
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub:
+  content:
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
   repo: git@github.com:LeonDevLifeLog/leondevlifelog.github.io.git
+  branch: master

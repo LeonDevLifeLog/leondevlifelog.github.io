@@ -42,7 +42,13 @@ int main(){
     return 0;
 }
 ```
-
+``` java
+public class HelloWorld {
+    public static void main(String []args) {
+        System.out.println("Hello World");
+    }
+}
+```
 More info: [Deployment](https://hexo.io/docs/deployment.html)
 
 {% asciinema 121279 %}
