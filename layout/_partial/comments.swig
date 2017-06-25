@@ -15,4 +15,9 @@
       <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
     {% endif %}
   </div>
+  {% if theme.gitment.owner %}
+    <script>
+      gitment.render(document.getElementById("comments-box"));
+    </script>
+  {% endif %}
 {% endif %}

@@ -19,9 +19,9 @@ rss: default
 menu:
   Home: /
   Archives: /archives/
-  # Tags: /tags
-  # Categories: /categories
-  # About: /about
+  Tags: /tags
+  Categories: /categories
+  About: /about
 
 # ===========================================
 # Theme Settings
@@ -31,8 +31,8 @@ menu:
 theme:
   color: Default
   toc: true
-  search: false
-  fancybox: false
+  search: true
+  fancybox: true
 
 copyright:
   enable: true
@@ -49,13 +49,13 @@ reward:
 # Social links Settings
 # ===========================================
 social:
-  email: your@email.com
+  email: leondevlifelog@gmail.com
   stack-overflow:
-  twitter:
+  twitter: https://twitter.com/leondevlifelog
   facebook:
   linkedin:
-  google:
-  github:
+  google: 
+  github: https://github.com/LeonDevLifeLog
   weibo:
   zhihu:
   pocket:
@@ -72,9 +72,14 @@ google_analytics:
 # Duoshuo
 # duoshuo_shortname:
 # Disqus
-disqus_shortname:
+# disqus_shortname:
 # netease
 # netease_key:
+gitment:
+  owner: LeonDevLifeLog
+  repo: leondevlifelog.github.io
+  client_id: 6615b88881f81c1d65d3
+  client_secret: 7714059be62a5c488cbbb70a0e7af6468a04350c
 
 # ===========================================
 # Version
