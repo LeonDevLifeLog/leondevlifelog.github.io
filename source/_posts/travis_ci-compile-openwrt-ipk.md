@@ -13,7 +13,9 @@ tags:
 * push更改到github后触发编译
 * 每次编译成功之后都会推送*.ipk到gh-pages分支
 * 新建tag时，会触发编译并发布*.ipk文件到release页面
+
 <!--more-->
+
 # 使用方法
 1. 按照官方方法编写OpenWrt程序
 2. 将下面两个文件放到程序源码根目录
