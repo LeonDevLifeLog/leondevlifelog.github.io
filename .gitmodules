@@ -1,0 +1,4 @@
+[submodule "themes/even"]
+	path = themes/even
+	url = https://github.com/LeonDevLifeLog/leondevlifelog.github.io.git
+	branch = theme
