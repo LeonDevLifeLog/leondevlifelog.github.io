@@ -6,12 +6,8 @@ tags:
   - Kotlin
 post_asset_folder: false
 date: 2017-07-11 11:31:17
-description:
+description: Kotlin学习笔记
 ---
-
-摘要
-
-<!--more-->
 
 # 文件后缀
 Kotlin 文件以` .kt `为后缀.
