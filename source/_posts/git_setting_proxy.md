@@ -1,6 +1,6 @@
 title: 设置和取消git proxy
 date: 2016-7-5 10:19:43
-categories: Git
+categories: Development
 toc: false
 tags:
 - Git

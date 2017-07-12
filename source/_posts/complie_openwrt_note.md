@@ -1,6 +1,6 @@
 title: OpenWrt编译过程记录
 date: 2016-07-20 15:31:00
-categories: OpenWrt
+categories: Development
 toc: true
 tags:
 - OpenWrt

@@ -1,7 +1,7 @@
 
 title: 借助Travis CI持续集成工具，自动编译OpenWrt平台ipk软件包
 date: 2016-08-02 23:45:00
-categories: OpenWrt
+categories: Development
 toc: true
 tags:
 - OpenWrt

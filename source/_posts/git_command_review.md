@@ -1,6 +1,6 @@
 ---
 title: git知识点总结
-categories: Git
+categories: Development
 toc: true
 tags:
   - Git

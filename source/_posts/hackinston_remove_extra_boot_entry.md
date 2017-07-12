@@ -1,6 +1,6 @@
 title: 黑苹果删除多余的clover启动项
 date: 2016-5-9 22:19:43
-categories: Hackinston
+categories: Other
 toc: true
 tags:
 - Hackinston
