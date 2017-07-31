@@ -2,7 +2,6 @@
 title: 为小米4c编译LineageOS(CM/AOSP)14.1系统
 categories:
   - AOSP
-  - Development
 toc: true
 tags:
   - AOSP
