@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+    
+    <entry>
+      <title><![CDATA[为小米4c编译LineageOS(CM/AOSP)14.1系统]]></title>
+      <url>/2017/07/31/build-lineageOS-for-xiaomi-4c/</url>
+      <content type="html"><![CDATA[<p>既然决定往Android底层走了，不整一份源码怎么行。于是在昨天把LineageOS源码拉下来了，深入学习一下！</p>
+<a id="more"></a>
+<h1 id="说明-建议"><a href="#说明-建议" class="headerlink" title="说明/建议"></a>说明/建议</h1><ol>
+<li>能不用镜像就别用镜像，老是出现错误，去搜索错误太浪费时间</li>
+<li>除了下载源码，非特别说明，操作都是在docker里的源码根目录</li>
+<li>为小米4c编译，codename为libra，给自己设备编译时，注意替换</li>
+<li>小米手机使用第三方固件需要解锁bootloader（去官网解）</li>
+<li>本人使用Arch Linux，编译环境使用的Docker</li>
+</ol>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ol>
+<li>国际网络（gce一年免费，搞了一台学校的50MB带宽被榨干，还是Google的活动实在）</li>
+<li>磁盘100GB（最好SSD）</li>
+<li>最低双核CPU</li>
+<li>Docker</li>
+</ol>
+<blockquote>
+<p>从我的电脑配置(6700k CPU,256G SSD,8G RAM)来看，编译的时间还是可以接受的，只用了01:19:06 (hh:mm:ss)。</p>
+</blockquote>
+<h1 id="拉取源码"><a href="#拉取源码" class="headerlink" title="拉取源码"></a>拉取源码</h1><h2 id="下载repo"><a href="#下载repo" class="headerlink" title="下载repo"></a>下载repo</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo curl https://storage.googleapis.com/git-repo-downloads/repo &gt; /usr/bin/repo <span class="comment">#翻墙下载用下面的命令，proxychain功能自己去百度</span></span><br><span class="line"><span class="comment">#proxychain sudo curl https://storage.googleapis.com/git-repo-downloads/repo &gt; /usr/bin/repo </span></span><br><span class="line">sudo chmod a+x /usr/bin/repo</span><br></pre></td></tr></table></figure>
+<h2 id="下载源码"><a href="#下载源码" class="headerlink" title="下载源码"></a>下载源码</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> &lt;WORK_DIR&gt;</span><br><span class="line">repo init -u https://github.com/LineageOS/android.git -b cm-14.1</span><br><span class="line">repo sync</span><br><span class="line"><span class="comment">#proxychain repo sync</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>大约需要下载30G，50MB带宽大约用了2~3小时</p>
+</blockquote>
+<h1 id="准备编译环境"><a href="#准备编译环境" class="headerlink" title="准备编译环境"></a>准备编译环境</h1><h2 id="拉取docker镜像"><a href="#拉取docker镜像" class="headerlink" title="拉取docker镜像"></a>拉取docker镜像</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull registry.cn-hangzhou.aliyuncs.com/leon/docker-lineageos</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dockerfile 源码地址<a href="https://code.aliyun.com/leon0516/lineageos-docker" target="_blank" rel="noopener">源码地址</a><br>里面有说明<br>使用dockerfile源码里的run.sh来启动镜像，前提要设置run脚本里的SOURCE，CCACHE，OUT三个bash变量</p>
+</blockquote>
+<h1 id="准备设备私有文件"><a href="#准备设备私有文件" class="headerlink" title="准备设备私有文件"></a>准备设备私有文件</h1><h2 id="方法一-从设备提取"><a href="#方法一-从设备提取" class="headerlink" title="方法一 从设备提取"></a>方法一 从设备提取</h2><h3 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h3><ol>
+<li>手机已经root</li>
+<li>电脑安装adb工具</li>
+</ol>
+<h3 id="提取"><a href="#提取" class="headerlink" title="提取"></a>提取</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line"><span class="built_in">cd</span> device/xiaomi/libra</span><br><span class="line">./extract-files.sh <span class="comment">#自动连接adb 提取/system里的文件</span></span><br><span class="line"><span class="comment">#文件提取到vendor/xiaomi/libra/ 相对源码根目录</span></span><br><span class="line">./setup-makefiles.sh</span><br><span class="line"><span class="comment">#配置makefile文件</span></span><br></pre></td></tr></table></figure>
+<h2 id="方法二-TheMuppets（别人提取的）"><a href="#方法二-TheMuppets（别人提取的）" class="headerlink" title="方法二 TheMuppets（别人提取的）"></a>方法二 TheMuppets（别人提取的）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> vendor/xiaomi</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/TheMuppets/proprietary_vendor_xiaomi.git .</span><br></pre></td></tr></table></figure>
+<h1 id="进行编译"><a href="#进行编译" class="headerlink" title="进行编译"></a>进行编译</h1><h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">breakfast libra <span class="comment">#准备内核和配置文件（需要下载）</span></span><br></pre></td></tr></table></figure>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">brunch libra</span><br></pre></td></tr></table></figure>
+<h2 id="编译结果"><a href="#编译结果" class="headerlink" title="编译结果"></a>编译结果</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">cache_fs_type             = (str) ext4</span><br><span class="line">cache_size                = (int) 402653184</span><br><span class="line">default_system_dev_certificate = (str) build/target/product/security/testkey</span><br><span class="line">device_type               = (str) MMC</span><br><span class="line">extfs_sparse_flag         = (str) -s</span><br><span class="line">extra_recovery_keys       = (str) vendor/cm/build/target/product/security/lineage</span><br><span class="line">fs_type                   = (str) ext4</span><br><span class="line">fstab                     = (dict) &#123;<span class="string">'/cache'</span>: &lt;common.Partition object at 0x7f4305d2b1d0&gt;, <span class="string">'/data'</span>: &lt;common.Partition object at 0x7f4305d2b590&gt;, <span class="string">'/system'</span>: &lt;common.Partition object at 0x7f4305d2b650&gt;, <span class="string">'/recovery'</span>: &lt;common.Partition object at 0x7f4305d2b5d0&gt;, <span class="string">'/boot'</span>: &lt;common.Partition object at 0x7f4305d2b810&gt;, <span class="string">'/misc'</span>: &lt;common.Partition object at 0x7f4305d2b410&gt;&#125;</span><br><span class="line">fstab_version             = (int) 2</span><br><span class="line">mkbootimg_args            = (str) --ramdisk_offset 0x02000000 --tags_offset 0x00000100</span><br><span class="line">mkbootimg_version_args    = (str) --os_version 7.1.2 --os_patch_level 2017-07-05</span><br><span class="line">multistage_support        = (str) 1</span><br><span class="line">ota_override_device       = (str) auto</span><br><span class="line">recovery_api_version      = (int) 3</span><br><span class="line">recovery_as_boot          = (str) </span><br><span class="line">recovery_mount_options    = (str) ext4=max_batch_time=0,commit=1,data=ordered,barrier=1,errors=panic,nodelalloc</span><br><span class="line">recovery_size             = (int) 67108864</span><br><span class="line">selinux_fc                = (str) /tmp/targetfiles-q3gN1M/META/file_contexts.bin</span><br><span class="line">squashfs_sparse_flag      = (str) -s</span><br><span class="line">system_size               = (int) 2013265920</span><br><span class="line">tool_extensions           = (str) device/xiaomi/libra/../common</span><br><span class="line">update_rename_support     = (str) 1</span><br><span class="line">use_set_metadata          = (str) 1</span><br><span class="line">userdata_size             = (int) 12469648896</span><br><span class="line">unable to load device-specific module; assuming none</span><br><span class="line">using prebuilt recovery.img from BOOTABLE_IMAGES...</span><br><span class="line">using system.img from target-files</span><br><span class="line">Total of 491520 4096-byte output blocks <span class="keyword">in</span> 5607 input chunks.</span><br><span class="line">Finding transfers...</span><br><span class="line">Generating digraph...</span><br><span class="line">Finding vertex sequence...</span><br><span class="line">Reversing backward edges...</span><br><span class="line">  0/0 dependencies (0.00%) were violated; 0 <span class="built_in">source</span> blocks stashed.</span><br><span class="line">Improving vertex order...</span><br><span class="line">Revising stash size...</span><br><span class="line">  Total 0 blocks (0 bytes) are packed as new blocks due to insufficient cache size.</span><br><span class="line">Reticulating splines...</span><br><span class="line"> 973135872  973135872 (100.00%)     new __DATA</span><br><span class="line">max stashed blocks: 0  (0 bytes), <span class="built_in">limit</span>: 322122547 bytes (0.00%)</span><br><span class="line"></span><br><span class="line">using prebuilt boot.img from BOOTABLE_IMAGES...</span><br><span class="line">   boot size (33386496) is 49.75% of <span class="built_in">limit</span> (67108864)</span><br><span class="line">  running:  openssl pkcs8 -<span class="keyword">in</span> build/target/product/security/testkey.pk8 -inform DER -nocrypt</span><br><span class="line">  running:  java -Xmx2048m -Djava.library.path=/home/build/android/out/host/linux-x86/lib64 -jar /home/build/android/out/host/linux-x86/framework/signapk.jar -w build/target/product/security/testkey.x509.pem build/target/product/security/testkey.pk8 /tmp/tmplfxQq5 /home/build/android/out/target/product/libra/lineage_libra-ota-21c595d9d1.zip</span><br><span class="line"><span class="keyword">done</span>.</span><br><span class="line">[100% 49586/49586] build bacon</span><br><span class="line">Package Complete: /home/build/android/out/target/product/libra/lineage-14.1-20170730-UNOFFICIAL-libra.zip</span><br><span class="line">make: Leaving directory <span class="string">'/home/build/android'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#### make completed successfully (01:19:06 (hh:mm:ss)) ####</span></span><br><span class="line"></span><br><span class="line">build@leon-Manjaro:~/android$</span><br></pre></td></tr></table></figure>
+<h1 id="导入-Android-Studio"><a href="#导入-Android-Studio" class="headerlink" title="导入 Android Studio"></a>导入 Android Studio</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> build/envsetup.sh</span><br><span class="line">make idegen &amp;&amp; development/tools/idegen/idegen.sh <span class="comment">#docker下执行</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Android Studio 打开已有项目，找到源码根目录的.ipr文件<br>此方法可以避免全部编译源码</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><a href="https://wiki.lineageos.org/devices/libra/build#download-the-source-code" target="_blank" rel="noopener">Build for libra</a></li>
+<li><a href="http://blog.csdn.net/luoshengyang/article/details/29688041" target="_blank" rel="noopener">从CM刷机过程和原理分析Android系统结构</a></li>
+<li><a href="https://wiki.lineageos.org/import-android-studio-howto.html" target="_blank" rel="noopener">How to import the sources to Android Studio / IntelliJ</a></li>
+</ol>
+]]></content>
+      
+        <categories>
+            
+            <category> AOSP </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> AOSP </tag>
+            
+            <tag> LineageOS </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[AOSP repo 下载源码出现错误]]></title>
+      <url>/2017/07/30/AOSPrepo%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF/</url>
+      <content type="html"><![CDATA[<p>在下载LineageOS(CM/AOSP)源码的时候出现错误</p>
+<h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">error: .repo/manifests/: manifests checkout 31a4f417d1785e7420e5af2bb571f0e1f16da93a </span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/main.py"</span>, line 531, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    _Main(sys.argv[1:])</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/main.py"</span>, line 507, <span class="keyword">in</span> _Main</span><br><span class="line">    result = repo._Run(argv) or 0</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/main.py"</span>, line 180, <span class="keyword">in</span> _Run</span><br><span class="line">    result = cmd.Execute(copts, cargs)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/subcmds/init.py"</span>, line 399, <span class="keyword">in</span> Execute</span><br><span class="line">    self._SyncManifest(opt)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/subcmds/init.py"</span>, line 248, <span class="keyword">in</span> _SyncManifest</span><br><span class="line">    m.Sync_LocalHalf(syncbuf)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/project.py"</span>, line 1399, <span class="keyword">in</span> Sync_LocalHalf</span><br><span class="line">    upstream_gain = self._revlist(not_rev(HEAD), revid)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/project.py"</span>, line 2501, <span class="keyword">in</span> _revlist</span><br><span class="line">    <span class="built_in">return</span> self.work_git.rev_list(*a, **kw)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/project.py"</span>, line 2700, <span class="keyword">in</span> rev_list</span><br><span class="line">    (self._project.name, str(args), p.stderr))</span><br><span class="line">error.GitError: manifests rev-list (<span class="string">'^HEAD'</span>, u<span class="string">'31a4f417d1785e7420e5af2bb571f0e1f16da93a'</span>, <span class="string">'--'</span>): fatal: bad revision <span class="string">'^HEAD'</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h1 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h1><p>删除.repo 目录下的 除 repo 文件夹之外的其它所有文件，重新执行inti和sync<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf .repo/manifest*</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      
+        <categories>
+            
+            <category> ErrorLog </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ErrorLog </tag>
+            
+            <tag> AOSP </tag>
+            
+            <tag> Android </tag>
+            
+            <tag> LineageOS </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[解决ScrollView嵌套RecyclerView显示不全]]></title>
+      <url>/2017/07/21/%E8%A7%A3%E5%86%B3ScrollView%E5%B5%8C%E5%A5%97RecyclerView%E6%98%BE%E7%A4%BA%E4%B8%8D%E5%85%A8/</url>
+      <content type="html"><![CDATA[<h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>在ScrollView嵌套ListVIew、GirdView的时候都会出现显示不全的情况，对于这种情况只需要重写ListView和GridView的高度即可。<br>　　在Android6.0以下，ScrollView嵌套RecyclerView并不会出现显示不全的问题，但是在Android6.0及以上版本使用这种布局嵌套的时候就会出现RecyclerView显示不全的问题，解决方法很简单，只需要在RecyclerView的外面套上一层RelativeLayout即可，代码如下：<br><a id="more"></a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">RelativeLayout</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:descendantFocusability</span>=<span class="string">"blocksDescendants"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">android.support.v7.widget.RecyclerView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/gv_goods_list"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">RelativeLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>转载自<a href="http://www.jianshu.com/p/dd9c1631a71a" target="_blank" rel="noopener">进击的阿达</a></p>
+</blockquote>
+]]></content>
+      
+        <categories>
+            
+            <category> ErrorLog </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ErrorLog </tag>
+            
+            <tag> Android </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Android手机局域网调试]]></title>
+      <url>/2017/07/19/Android%E6%89%8B%E6%9C%BA%E5%B1%80%E5%9F%9F%E7%BD%91%E8%B0%83%E8%AF%95/</url>
+      <content type="html"><![CDATA[<p>数据线忘记带到公司了，目前大部分同事都是用的iPhone手机，导致无法实机调试，于是想到了局域网调试。于是记录一下。</p>
+<a id="more"></a>
+<p>方法如下</p>
+<h1 id="手机端开启adb-tcp连接端口"><a href="#手机端开启adb-tcp连接端口" class="headerlink" title="手机端开启adb tcp连接端口"></a>手机端开启adb tcp连接端口</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">:/$su</span><br><span class="line">:/#setprop service.adb.tcp.port 5555</span><br><span class="line">:/#stop adbd</span><br><span class="line">:/#start adbd</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>setprop是用来设置系统属性的<br>需要root权限</p>
+</blockquote>
+<h1 id="电脑端的设置和使用"><a href="#电脑端的设置和使用" class="headerlink" title="电脑端的设置和使用"></a>电脑端的设置和使用</h1><h2 id="连接ADB"><a href="#连接ADB" class="headerlink" title="连接ADB"></a>连接ADB</h2><p>连接adb，其中phone_ipaddress和portnumber是指手机的ip和前面设置的监听端口号（如5555）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb connect &lt;phone_ipaddress&gt;:&lt;portnumber&gt;</span><br></pre></td></tr></table></figure></p>
+<p>直接<code>adb shell</code>或<code>adb -s</code>设备shell连接设备</p>
+<h2 id="断开ADB"><a href="#断开ADB" class="headerlink" title="断开ADB"></a>断开ADB</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb disconnect &lt;phone_ipaddress&gt;:&lt;port&gt;</span><br></pre></td></tr></table></figure>]]></content>
+      
+        <categories>
+            
+            <category> Development </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Android </tag>
+            
+            <tag> adb </tag>
+            
+            <tag> WIFI </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Support包版本不一致导致AndroidStudio报错]]></title>
+      <url>/2017/07/18/Support%E5%8C%85%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E5%AF%BC%E8%87%B4AndroidStudio%E6%8A%A5%E9%94%99/</url>
+      <content type="html"><![CDATA[<h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Error:Execution failed for task &apos;:app:processDebugManifest&apos;.</span><br><span class="line">&gt; Manifest merger failed : Attribute meta-data#android.support.VERSION@value value=(25.3.1) from [com.android.support:design:25.3.1] AndroidManifest.xml:27:9-31</span><br><span class="line">  	is also present at [com.android.support:support-v4:26.0.0-alpha1] AndroidManifest.xml:27:9-38 value=(26.0.0-alpha1).</span><br><span class="line">  	Suggestion: add &apos;tools:replace=&quot;android:value&quot;&apos; to &lt;meta-data&gt; element at AndroidManifest.xml:25:5-27:34 to override.</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>修改依赖<code>com.android.support</code>为统一版本</p>
+]]></content>
+      
+        <categories>
+            
+            <category> ErrorLog </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ErrorLog </tag>
+            
+            <tag> Android </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Nodejs安装/使用报权限错误]]></title>
+      <url>/2017/07/17/Nodejs%E5%AE%89%E8%A3%85-%E4%BD%BF%E7%94%A8%E6%8A%A5%E6%9D%83%E9%99%90%E9%94%99%E8%AF%AF/</url>
+      <content type="html"><![CDATA[<h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><p>在安装新的nodejs模块或使用一些nodejs命令时会报权限不够的错误，日志类似下面：<br><a id="more"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">npm ERR! tar.unpack untar error /Users/deangibson/.npm/eslint/2.4.0/package.tgz</span><br><span class="line">npm ERR! Darwin 15.3.0</span><br><span class="line">npm ERR! argv &quot;/usr/local/bin/node&quot; &quot;/usr/local/bin/npm&quot; &quot;install&quot; &quot;-g&quot; &quot;eslint&quot;</span><br><span class="line">npm ERR! node v4.2.3</span><br><span class="line">npm ERR! npm  v2.14.7</span><br><span class="line">npm ERR! path /usr/local/lib/node_modules/eslint</span><br><span class="line">npm ERR! code EACCES</span><br><span class="line">npm ERR! errno -13</span><br><span class="line">npm ERR! syscall mkdir</span><br><span class="line"></span><br><span class="line">npm ERR! Error: EACCES: permission denied, mkdir &apos;/usr/local/lib/node_modules/eslint&apos;</span><br><span class="line">npm ERR!     at Error (native)</span><br><span class="line">npm ERR!  &#123; [Error: EACCES: permission denied, mkdir &apos;/usr/local/lib/node_modules/eslint&apos;]</span><br><span class="line">npm ERR!   errno: -13,</span><br><span class="line">npm ERR!   code: &apos;EACCES&apos;,</span><br><span class="line">npm ERR!   syscall: &apos;mkdir&apos;,</span><br><span class="line">npm ERR!   path: &apos;/usr/local/lib/node_modules/eslint&apos;,</span><br><span class="line">npm ERR!   fstream_type: &apos;Directory&apos;,</span><br><span class="line">npm ERR!   fstream_path: &apos;/usr/local/lib/node_modules/eslint&apos;,</span><br><span class="line">npm ERR!   fstream_class: &apos;DirWriter&apos;,</span><br><span class="line">npm ERR!   fstream_stack: </span><br><span class="line">npm ERR!    [ &apos;/usr/local/lib/node_modules/npm/node_modules/fstream/lib/dir-writer.js:35:25&apos;,</span><br><span class="line">npm ERR!      &apos;/usr/local/lib/node_modules/npm/node_modules/mkdirp/index.js:47:53&apos;,</span><br><span class="line">npm ERR!      &apos;FSReqWrap.oncomplete (fs.js:82:15)&apos; ] &#125;</span><br><span class="line">npm ERR! </span><br><span class="line">npm ERR! Please try running this command again as root/Administrator.</span><br><span class="line"></span><br><span class="line">npm ERR! Please include the following file with any support request:</span><br><span class="line">npm ERR!     /Users/deangibson/npm-debug.log</span><br></pre></td></tr></table></figure>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>更改系统安装目录的用户为自己而非root<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R $(whoami) $(npm config get prefix)/lib/node_modules</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      
+        <categories>
+            
+            <category> ErrorLog </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ErrorLog </tag>
+            
+            <tag> Nodejs </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux下Android模拟器无法启动]]></title>
+      <url>/2017/07/17/Linux%E4%B8%8BAndroid%E6%A8%A1%E6%8B%9F%E5%99%A8%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8/</url>
+      <content type="html"><![CDATA[<h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><p>Linux下Android模拟器无法启动，报错找不到i965_dri.so</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">Cannot launch AVD in emulator.</span><br><span class="line">Output:</span><br><span class="line">libGL error: unable to load driver: i965_dri.so</span><br><span class="line">libGL error: driver pointer missing</span><br><span class="line">libGL error: failed to load driver: i965</span><br><span class="line">libGL error: unable to load driver: swrast_dri.so</span><br><span class="line">libGL error: failed to load driver: swrast</span><br><span class="line">X Error of failed request:  GLXBadContext</span><br><span class="line">  Major opcode of failed request:  154 (GLX)</span><br><span class="line">  Minor opcode of failed request:  6 (X_GLXIsDirect)</span><br><span class="line">  Serial number of failed request:  49</span><br><span class="line">  Current serial number in output stream:  48</span><br><span class="line">libGL error: unable to load driver: i965_dri.so</span><br><span class="line">libGL error: driver pointer missing</span><br><span class="line">libGL error: failed to load driver: i965</span><br><span class="line">libGL error: unable to load driver: swrast_dri.so</span><br><span class="line">libGL error: failed to load driver: swrast</span><br><span class="line">X Error of failed request:  GLXBadContext</span><br><span class="line">  Major opcode of failed request:  154 (GLX)</span><br><span class="line">  Minor opcode of failed request:  6 (X_GLXIsDirect)</span><br><span class="line">  Serial number of failed request:  49</span><br><span class="line">  Current serial number in output stream:  48</span><br><span class="line">libGL error: unable to load driver: i965_dri.so</span><br><span class="line">libGL error: driver pointer missing</span><br><span class="line">libGL error: failed to load driver: i965</span><br><span class="line">libGL error: unable to load driver: swrast_dri.so</span><br><span class="line">libGL error: failed to load driver: swrast</span><br><span class="line">emulator: WARNING: VM heap size set below hardware specified minimum of 228MB</span><br><span class="line">X Error of failed request:  BadValue (integer parameter out of range for operation)</span><br><span class="line">emulator: WARNING: Setting VM heap size to 384MB</span><br><span class="line">  Major opcode of failed request:  154 (GLX)</span><br><span class="line">  Minor opcode of failed request:  24 (X_GLXCreateNewContext)</span><br><span class="line">  Value in failed request:  0x0</span><br><span class="line">  Serial number of failed request:  33</span><br><span class="line">  Current serial number in output stream:  34</span><br><span class="line">QObject::~QObject: Timers cannot be stopped from another thread</span><br></pre></td></tr></table></figure>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><h2 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emulator -avd Nexus_5X_API_23_x86 -use-system-libs <span class="comment">#使用系统库</span></span><br></pre></td></tr></table></figure>
+<h2 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -sf /usr/lib/libstdc++.so.6  tools/lib64/libstdc++/libstdc++.so.6 <span class="comment">#给库做个链接</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      
+        <categories>
+            
+            <category> ErrorLog </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ErrorLog </tag>
+            
+            <tag> Android </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Plugin with id 'com.Android.application' not found]]></title>
+      <url>/2017/07/14/plugin-with-id-com-android-application-not-found/</url>
+      <content type="html"><![CDATA[<h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><p>这个错误是build.gradle造成的，我们打开文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error:(1, 0) Plugin with id &apos;com.Android.application&apos; not found.</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>打开报错的项目的build.gradle，看看有没有buildscript{ } (应该是没有的，因为就是没有这个东西才报错的)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenCentral() // or jcenter()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath &apos;com.android.tools.build:gradle:2.3.0&apos;   //注意版本</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+        <categories>
+            
+            <category> ErrorLog </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ErrorLog </tag>
+            
+            <tag> Android </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[APK Installation failed with message Invalid File]]></title>
+      <url>/2017/07/12/apk-install-faile-with-message/</url>
+      <content type="html"><![CDATA[<h1 id="错误信息如下"><a href="#错误信息如下" class="headerlink" title="错误信息如下:"></a>错误信息如下:</h1><p>利用Android studio debug时安装不上apk,一直报错,错误日志如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Installation failed with message Invalid File: D:\project\app\build\intermediates\split-apk\with_ImageProcessor\debug\slices\slice_0.apk. It is possible that this issue is resolved by uninstalling an existing version of the apk if it is present, and then re-installing.</span><br><span class="line"></span><br><span class="line">WARNING: Uninstalling will remove the application data!</span><br><span class="line"></span><br><span class="line">Do you want to uninstall the existing application?</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><h2 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Click Build tab ---&gt; Clean Project</span><br><span class="line"></span><br><span class="line">Click Build tab ---&gt; Build APK</span><br><span class="line"></span><br><span class="line">Run.</span><br></pre></td></tr></table></figure>
+<h2 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h2><p>打开<code>settings</code>&gt;<code>build,execute,deployment</code>&gt;<code>instant run</code>&gt;<br><code>Enable instant run to hot swap code /resource change on deploy</code>(取消选中此项)</p>
+]]></content>
+      
+        <categories>
+            
+            <category> ErrorLog </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ErrorLog </tag>
+            
+            <tag> Android </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[基础语法-Kotlin自学1]]></title>
+      <url>/2017/07/11/%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95-Kotlin%E8%87%AA%E5%AD%A61/</url>
+      <content type="html"><![CDATA[<h1 id="文件后缀"><a href="#文件后缀" class="headerlink" title="文件后缀"></a>文件后缀</h1><p>Kotlin 文件以<code>.kt</code>为后缀.</p>
+<h1 id="包声明"><a href="#包声明" class="headerlink" title="包声明"></a>包声明</h1><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> leon.dev.life.log</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.*</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">test</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>kotlin源文件不需要相匹配的目录和包，源文件可以放在任何文件目录。<br>如果没有指定包，默认为 default 包。</p>
+</blockquote>
+<h1 id="默认导入"><a href="#默认导入" class="headerlink" title="默认导入"></a>默认导入</h1><p>有多个包会默认导入到每个 Kotlin 文件中：</p>
+<ul>
+<li>kotlin.*</li>
+<li>kotlin.annotation.*</li>
+<li>kotlin.collections.*</li>
+<li>kotlin.comparisons.*</li>
+<li>kotlin.io.*</li>
+<li>kotlin.ranges.*</li>
+<li>kotlin.sequences.*</li>
+<li>kotlin.text.*</li>
+</ul>
+<h1 id="函数定义"><a href="#函数定义" class="headerlink" title="函数定义"></a>函数定义</h1><p>函数定义使用关键字 <code>fun</code>，参数格式为：<code>参数 : 类型</code></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">sum</span><span class="params">(a: <span class="type">Int</span>, b: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;   <span class="comment">// Int 参数，返回值 Int</span></span><br><span class="line">	<span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>表达式作为函数体，返回类型自动推断：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">sum</span><span class="params">(a: <span class="type">Int</span>, b: <span class="type">Int</span>)</span></span> = a + b</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">sum</span><span class="params">(a: <span class="type">Int</span>, b: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> = a + b   <span class="comment">// public 方法则必须明确写出返回类型</span></span><br></pre></td></tr></table></figure></p>
+<p>无返回值的函数(类似Java中的void)：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">printSum</span><span class="params">(a: <span class="type">Int</span>, b: <span class="type">Int</span>)</span></span>: <span class="built_in">Unit</span> &#123; </span><br><span class="line">	print(a + b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果是返回 Unit类型，则可以省略(对于public方法也是这样)：</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">printSum</span><span class="params">(a: <span class="type">Int</span>, b: <span class="type">Int</span>)</span></span> &#123; </span><br><span class="line">	print(a + b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="可变长参数函数"><a href="#可变长参数函数" class="headerlink" title="可变长参数函数"></a>可变长参数函数</h1><p>函数的变长参数可以用 vararg 关键字进行标识：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">vars</span><span class="params">(<span class="keyword">vararg</span> v:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(vt <span class="keyword">in</span> v)&#123;</span><br><span class="line">        print(vt)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 测试</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    vars(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>)  <span class="comment">// 输出12345</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="lambda-匿名函数"><a href="#lambda-匿名函数" class="headerlink" title="lambda(匿名函数)"></a>lambda(匿名函数)</h1><p>lambda表达式使用实例：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> sumLambda: (<span class="built_in">Int</span>, <span class="built_in">Int</span>) -&gt; <span class="built_in">Int</span> = &#123;x,y -&gt; x+y&#125;</span><br><span class="line">    println(sumLambda(<span class="number">1</span>,<span class="number">2</span>))  <span class="comment">// 输出 3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="定义常量与变量"><a href="#定义常量与变量" class="headerlink" title="定义常量与变量"></a>定义常量与变量</h1><p>可变变量定义：var 关键字<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> &lt;标识符&gt; : &lt;类型&gt; = &lt;初始化值&gt;</span><br></pre></td></tr></table></figure></p>
+<p>不可变变量定义：val 关键字，只能赋值一次的变量(类似Java中final修饰的变量)<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> &lt;标识符&gt; : &lt;类型&gt; = &lt;初始化值&gt;</span><br></pre></td></tr></table></figure></p>
+<p>常量与变量都可以没有初始化值,但是在引用前必须初始化<br>编译器支持自动类型判断,即声明时可以不指定类型,由编译器判断。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> a: <span class="built_in">Int</span> = <span class="number">1</span></span><br><span class="line"><span class="keyword">val</span> b = <span class="number">1</span>       <span class="comment">// 系统自动推断变量类型为Int</span></span><br><span class="line"><span class="keyword">val</span> c: <span class="built_in">Int</span>      <span class="comment">// 如果不在声明时初始化则必须提供变量类型</span></span><br><span class="line">c = <span class="number">1</span>           <span class="comment">// 明确赋值</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> x = <span class="number">5</span>        <span class="comment">// 系统自动推断变量类型为Int</span></span><br><span class="line">x += <span class="number">1</span>           <span class="comment">// 变量可修改</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h1><p>Kotlin 支持单行很多行注释，实例如下：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这是一个单行注释</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 这是一个多行的</span></span><br><span class="line"><span class="comment">   块注释。 */</span></span><br></pre></td></tr></table></figure></p>
+<p>与 Java 不同, Kotlin 中的块注释允许嵌套。</p>
+<h1 id="字符串模板"><a href="#字符串模板" class="headerlink" title="字符串模板"></a>字符串模板</h1><p>$ 表示一个变量名或者变量值<br>$varName 表示变量值<br>${varName.fun()} 表示变量的方法返回值:<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">1</span></span><br><span class="line"><span class="comment">// 模板中的简单名称：</span></span><br><span class="line"><span class="keyword">val</span> s1 = <span class="string">"a is <span class="variable">$a</span>"</span> </span><br><span class="line"></span><br><span class="line">a = <span class="number">2</span></span><br><span class="line"><span class="comment">// 模板中的任意表达式：</span></span><br><span class="line"><span class="keyword">val</span> s2 = <span class="string">"<span class="subst">$&#123;s1.replace("is", "was")&#125;</span>, but now is <span class="variable">$a</span>"</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="NULL检查机制"><a href="#NULL检查机制" class="headerlink" title="NULL检查机制"></a>NULL检查机制</h1><p>Kotlin的空安全设计对于声明可为空的参数，在使用时要进行空判断处理，有两种处理方式，字段后加!!像Java一样抛出空异常，另一种字段后加?可不做处理返回值为 null或配合?:做空判断处理<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//类型后面加?表示可为空</span></span><br><span class="line"><span class="keyword">var</span> age: String? = <span class="string">"23"</span> </span><br><span class="line"><span class="comment">//抛出空指针异常</span></span><br><span class="line"><span class="keyword">val</span> ages = age!!.toInt()</span><br><span class="line"><span class="comment">//不做处理返回 null</span></span><br><span class="line"><span class="keyword">val</span> ages1 = age?.toInt()</span><br><span class="line"><span class="comment">//age为空返回-1</span></span><br><span class="line"><span class="keyword">val</span> ages2 = age?.toInt() ?: <span class="number">-1</span></span><br></pre></td></tr></table></figure></p>
+<p>当一个引用可能为 null 值时, 对应的类型声明必须明确地标记为可为 null。<br>当 str 中的字符串内容不是一个整数时, 返回 null:<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">parseInt</span><span class="params">(str: <span class="type">String</span>)</span></span>: <span class="built_in">Int</span>? &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以下实例演示如何使用一个返回值可为 null 的函数:<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (args.size &lt; <span class="number">2</span>) &#123;</span><br><span class="line">    print(<span class="string">"Two integers expected"</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">val</span> x = parseInt(args[<span class="number">0</span>])</span><br><span class="line">  <span class="keyword">val</span> y = parseInt(args[<span class="number">1</span>])</span><br><span class="line">  <span class="comment">// 直接使用 `x * y` 会导致错误, 因为它们可能为 null.</span></span><br><span class="line">  <span class="keyword">if</span> (x != <span class="literal">null</span> &amp;&amp; y != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 在进行过 null 值检查之后, x 和 y 的类型会被自动转换为非 null 变量</span></span><br><span class="line">    print(x * y)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="类型检测及自动类型转换"><a href="#类型检测及自动类型转换" class="headerlink" title="类型检测及自动类型转换"></a>类型检测及自动类型转换</h1><p>我们可以使用 is 运算符检测一个表达式是否某类型的一个实例(类似于Java中的instanceof关键字)。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getStringLength</span><span class="params">(obj: <span class="type">Any</span>)</span></span>: <span class="built_in">Int</span>? &#123;</span><br><span class="line">  <span class="keyword">if</span> (obj <span class="keyword">is</span> String) &#123;</span><br><span class="line">    <span class="comment">// 做过类型判断以后，obj会被系统自动转换为String类型</span></span><br><span class="line">    <span class="keyword">return</span> obj.length </span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//在这里还有一种方法，与Java中instanceof不同，使用!is</span></span><br><span class="line">  <span class="comment">// if (obj !is String)&#123;</span></span><br><span class="line">  <span class="comment">//   // XXX</span></span><br><span class="line">  <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 这里的obj仍然是Any类型的引用</span></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>或者<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getStringLength</span><span class="params">(obj: <span class="type">Any</span>)</span></span>: <span class="built_in">Int</span>? &#123;</span><br><span class="line">  <span class="keyword">if</span> (obj !<span class="keyword">is</span> String)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">  <span class="comment">// 在这个分支中, `obj` 的类型会被自动转换为 `String`</span></span><br><span class="line">  <span class="keyword">return</span> obj.length</span><br><span class="line">&#125;</span><br><span class="line">甚至还可以</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getStringLength</span><span class="params">(obj: <span class="type">Any</span>)</span></span>: <span class="built_in">Int</span>? &#123;</span><br><span class="line">  <span class="comment">// 在 `&amp;&amp;` 运算符的右侧, `obj` 的类型会被自动转换为 `String`</span></span><br><span class="line">  <span class="keyword">if</span> (obj <span class="keyword">is</span> String &amp;&amp; obj.length &gt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> obj.length</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>区间<br>区间表达式由具有操作符形式 .. 的 rangeTo 函数辅以 in 和 !in 形成。<br>区间是为任何可比较类型定义的，但对于整型原生类型，它有一个优化的实现。以下是使用区间的一些示例:<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1.</span><span class="number">.4</span>) print(i) <span class="comment">// 输出“1234”</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">4.</span><span class="number">.1</span>) print(i) <span class="comment">// 什么都不输出</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (i <span class="keyword">in</span> <span class="number">1.</span><span class="number">.10</span>) &#123; <span class="comment">// 等同于 1 &lt;= i &amp;&amp; i &lt;= 10</span></span><br><span class="line">    println(i)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 step 指定步长</span></span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1.</span><span class="number">.4</span> step <span class="number">2</span>) print(i) <span class="comment">// 输出“13”</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">4</span> downTo <span class="number">1</span> step <span class="number">2</span>) print(i) <span class="comment">// 输出“42”</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 until 函数排除结束元素</span></span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span> until <span class="number">10</span>) &#123;   <span class="comment">// i in [1, 10) 排除了 10</span></span><br><span class="line">     println(i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>实例测试<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    print(<span class="string">"循环输出："</span>)</span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1.</span><span class="number">.4</span>) print(i) <span class="comment">// 输出“1234”</span></span><br><span class="line">    println(<span class="string">"\n----------------"</span>)</span><br><span class="line">    print(<span class="string">"设置步长："</span>)</span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1.</span><span class="number">.4</span> step <span class="number">2</span>) print(i) <span class="comment">// 输出“13”</span></span><br><span class="line">    println(<span class="string">"\n----------------"</span>)</span><br><span class="line">    print(<span class="string">"使用 downTo："</span>)</span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">4</span> downTo <span class="number">1</span> step <span class="number">2</span>) print(i) <span class="comment">// 输出“42”</span></span><br><span class="line">    println(<span class="string">"\n----------------"</span>)</span><br><span class="line">    print(<span class="string">"使用 until："</span>)</span><br><span class="line">    <span class="comment">// 使用 until 函数排除结束元素</span></span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span> until <span class="number">4</span>) &#123;   <span class="comment">// i in [1, 4) 排除了 4</span></span><br><span class="line">        print(i)</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"\n----------------"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出结果：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">循环输出：<span class="number">1234</span></span><br><span class="line">----------------</span><br><span class="line">设置步长：<span class="number">13</span></span><br><span class="line">----------------</span><br><span class="line">使用 downTo：<span class="number">42</span></span><br><span class="line">----------------</span><br><span class="line">使用 until：<span class="number">123</span></span><br><span class="line">----------------</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Development </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Kotlin </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[执行ssh-add时出现错误]]></title>
+      <url>/2017/07/11/ssh-key-add-error/</url>
+      <content type="html"><![CDATA[<p>执行<code>ssh-add /.ssh/id_rsa</code>出现这个错误:<code>Could not open a connection to your authentication agent</code></p>
+<a id="more"></a>
+<p>解决办法:<br>先执行如下命令:<code>ssh-agent bash</code></p>
+]]></content>
+      
+        <categories>
+            
+            <category> ErrorLog </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ErrorLog </tag>
+            
+            <tag> ssh </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[git知识点总结]]></title>
+      <url>/2017/06/25/git_command_review/</url>
+      <content type="html"><![CDATA[<h1 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h1><h2 id="版本回退"><a href="#版本回退" class="headerlink" title="版本回退"></a>版本回退</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD^ <span class="comment">#回退到上一个版本</span></span><br><span class="line">git reset --hard HEAD^^ <span class="comment">#回退到上上一个版本</span></span><br><span class="line">git reset --hard HEAD~100 <span class="comment">#会退到上100个版本</span></span><br><span class="line">git reflog <span class="comment"># 查看命令历史</span></span><br></pre></td></tr></table></figure>
+<h2 id="撤销修改"><a href="#撤销修改" class="headerlink" title="撤销修改"></a>撤销修改</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout -- file <span class="comment">#丢弃工作区的修改</span></span><br><span class="line">git reset HEAD file <span class="comment">#git reset HEAD file</span></span><br></pre></td></tr></table></figure>
+<h2 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rm test.txt</span><br></pre></td></tr></table></figure>
+<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><h2 id="添加远程仓库"><a href="#添加远程仓库" class="headerlink" title="添加远程仓库"></a>添加远程仓库</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin giturl <span class="comment">#远程库的名字是origin</span></span><br><span class="line">git push -u origin master <span class="comment">#第一次推送master分支的所有内容 -u 是关联upstream</span></span><br></pre></td></tr></table></figure>
+<h2 id="断开远程仓库"><a href="#断开远程仓库" class="headerlink" title="断开远程仓库"></a>断开远程仓库</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git remote rm origin <span class="comment">#断开origin上游仓库</span></span><br><span class="line">git rename origin neworigin <span class="comment">#修改远程仓库在本地的简称</span></span><br></pre></td></tr></table></figure>
+<h1 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h1><h2 id="创建与合并分支"><a href="#创建与合并分支" class="headerlink" title="创建与合并分支"></a>创建与合并分支</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b dev <span class="comment">#创建dev分支并切换到dev分支 等同以下两句</span></span><br><span class="line">git branch dev <span class="comment">#创建分支</span></span><br><span class="line">git checkout dev <span class="comment">#切换分支 注意-b</span></span><br><span class="line">git branch -d dev <span class="comment"># 删除分支</span></span><br><span class="line">git branch <span class="comment"># 查看分支</span></span><br><span class="line">git merge dev <span class="comment">#命令用于合并指定分支到当前分支</span></span><br><span class="line">git branch --<span class="built_in">set</span>-upstream branch-name origin/branch-name <span class="comment">#建立本地分支和远程分支的关联</span></span><br><span class="line">git pull <span class="comment">#push不上,先pull下来合并一下,再push</span></span><br></pre></td></tr></table></figure>
+<h1 id="标签管理"><a href="#标签管理" class="headerlink" title="标签管理"></a>标签管理</h1><h2 id="创建标签"><a href="#创建标签" class="headerlink" title="创建标签"></a>创建标签</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git tag &lt;name&gt; <span class="comment">#创建标签</span></span><br><span class="line">git tag <span class="comment">#查看所有标签</span></span><br><span class="line">git tag &lt;name&gt; &lt;commit id&gt; <span class="comment">#对某次commit打标签</span></span><br><span class="line">git show &lt;tagname&gt; <span class="comment">#查看标签内容</span></span><br><span class="line">git tag -a v0.1 -m <span class="string">"version 0.1 released"</span> &lt;commit id&gt; <span class="comment"># -a指定标签名，-m指定说明文字</span></span><br><span class="line">git tag -s v0.2 -m <span class="string">"signed version 0.2 released"</span> fec145a <span class="comment">#-s 用私钥签名一个标签(gnupg 签名)</span></span><br></pre></td></tr></table></figure>
+<h2 id="操作标签"><a href="#操作标签" class="headerlink" title="操作标签"></a>操作标签</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git tag -d &lt;tagname&gt; <span class="comment">#删除标签</span></span><br><span class="line">git push origin &lt;tagname&gt; <span class="comment">#推送标签</span></span><br><span class="line">git push origin --tags <span class="comment">#一次性推送全部尚未推送到远程的本地标签</span></span><br><span class="line">git push origin :refs/tags/&lt;tagname&gt; <span class="comment">#删除远程标签(前提先删除本地标签)</span></span><br></pre></td></tr></table></figure>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
+<li><a href="https://git-scm.com/book/zh/v2" target="_blank" rel="noopener">Pro Git book 2nd Edition(2014)</a></li>
+<li><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000" target="_blank" rel="noopener">Git教程 - 廖雪峰</a></li>
+</ol>
+]]></content>
+      
+        <categories>
+            
+            <category> Development </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Git </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[借助Travis CI持续集成工具，自动编译OpenWrt平台ipk软件包]]></title>
+      <url>/2016/08/02/travis_ci-compile-openwrt-ipk/</url>
+      <content type="html"><![CDATA[<h1 id="实现的功能"><a href="#实现的功能" class="headerlink" title="实现的功能"></a>实现的功能</h1><ul>
+<li>push更改到github后触发编译</li>
+<li>每次编译成功之后都会推送*.ipk到gh-pages分支</li>
+<li>新建tag时，会触发编译并发布*.ipk文件到release页面</li>
+</ul>
+<a id="more"></a>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><ol>
+<li>按照官方方法编写OpenWrt程序</li>
+<li>将下面两个文件放到程序源码根目录<ul>
+<li>根据.travis.yml文件中文注释按需修改</li>
+<li>deploy.sh文件不用修改</li>
+</ul>
+</li>
+<li>登录Travis CI并对此repo开启持续集成</li>
+</ol>
+<h1 id="代码文件"><a href="#代码文件" class="headerlink" title="代码文件"></a>代码文件</h1><ul>
+<li>.travis.yml</li>
+</ul>
+<figure class="highlight yml"><figcaption><span>.travis.yml</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#filename:.travis.yml</span></span><br><span class="line"><span class="attr">sudo:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">cache:</span></span><br><span class="line"><span class="attr">  bundler:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  directories:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">cache/</span></span><br><span class="line"><span class="attr">notifications:</span></span><br><span class="line"><span class="attr">  email:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">c</span></span><br><span class="line"><span class="attr">compiler:</span> <span class="string">gcc</span></span><br><span class="line"><span class="attr">env:</span></span><br><span class="line"><span class="attr">  global:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">PACKAGE=mpu6050</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">USER=leon0516</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">REPO=openwrt-mpu6050-example</span></span><br><span class="line">  <span class="comment"># 设置环境变量</span></span><br><span class="line">  <span class="comment"># env:</span></span><br><span class="line">  <span class="comment">#  global:</span></span><br><span class="line">  <span class="comment">#  - USER: &lt;your GitHub username&gt;</span></span><br><span class="line">  <span class="comment">#  - REPO: &lt;this GitHub repo name&gt;</span></span><br><span class="line">  <span class="comment">#  - PACKAGE: &lt;the package name&gt; #OpenWrt软件包名称</span></span><br><span class="line"><span class="attr">  - secure:</span> <span class="string">"WVzPUBwjpPGGDtgQoGMZe/tVTQ721p66mvLgzWuH1SSvLHQxWoFE8eymXLPQXFpZ0VjntQPHnTmzgazOv4aUiJPplswSfLiQUtbaSfuZftxAULGqqzaR3UvzXptdKpXP/quAfgSrVRWgnU3053DjY86oDcIp22O0NnK4LOxPcuadc62dmsS8UQlnrNVoCPCtWorjF/LXcuR12BMxFDCRnrIwveFp57V8x3szE1kOW9ghtBboKqcqN+U/guvE6vCND8VW3JLQkC1fZMIkhJF1tP0M5EyuTwIStZKXH+Ln5ohfRZQS5GFtFiD1ARYsQrIc1rPaA/Yq2/kQRHoKNLn+TsBNiI1+gK63jm3ufN7YW1Sm2Rv5jv/T3v/H2s2OBP6Idbp66RquuE7Ec7Q1B2WPDJ8CwBUiouRUQTWNHfoAu+eeeG3wGMjssXX6zQJA3//aaPXv6sTtMoIQHMrK+X53799WvLs29bvH2g+rpTMzur7jRBsEC4F3mRl6vLuciV357ktz19iJkcftCCL+7m915OYokwzy5PguN2hqjvlLMTi5y5RXbG5o4tmQHJGzc5PEjkxFcHflIc8/NLWJeFEPCgVfXocezvv3rfdAw4A2Iv85v4uO+Hb8SiNuKj4xyyY1Hikd5lMxIWF4CN6EGIDA5a+r1oNTLscM8AWsozy4n1c="</span></span><br><span class="line">    <span class="comment"># Go to GitHub.com -&gt; Settings -&gt; Applications -&gt; Personal Access Tokens </span></span><br><span class="line">    <span class="comment"># —&gt; Create new token, and copy it to your clipboard</span></span><br><span class="line">    <span class="comment"># travis encrypt TOKEN=123459... -r username/reponame</span></span><br><span class="line">    <span class="comment"># 注意！这里加密的内容包含 「TOKEN=」</span></span><br><span class="line">    <span class="comment"># 会生成环境变量$&#123;TOKEN&#125;，$&#123;TOKEN&#125;等同于123459...</span></span><br><span class="line">    <span class="comment"># Paste here</span></span><br><span class="line"><span class="attr">  matrix:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">SDK_URL=https://downloads.openwrt.org/chaos_calmer/15.05/ar71xx/generic/OpenWrt-SDK-15.05-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">SDK_URL=https://downloads.openwrt.org/chaos_calmer/15.05/ramips/mt7620/OpenWrt-SDK-15.05-ramips-mt7620_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">SDK_URL=https://downloads.openwrt.org/chaos_calmer/15.05/brcm63xx/generic/OpenWrt-SDK-15.05-brcm63xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">SDK_URL=https://downloads.openwrt.org/chaos_calmer/15.05/ramips/mt7621/OpenWrt-SDK-15.05-ramips-mt7621_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">SDK_URL=https://downloads.openwrt.org/chaos_calmer/15.05/ramips/mt7628/OpenWrt-SDK-15.05-ramips-mt7628_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">SDK_URL=https://downloads.openwrt.org/chaos_calmer/15.05/bcm53xx/generic/OpenWrt-SDK-15.05-bcm53xx_gcc-4.8-linaro_uClibc-0.9.33.2_eabi.Linux-x86_64.tar.bz2</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">SDK_URL=https://downloads.openwrt.org/chaos_calmer/15.05/brcm47xx/generic/OpenWrt-SDK-15.05-brcm47xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">SDK_URL=https://downloads.openwrt.org/chaos_calmer/15.05/x86/generic/OpenWrt-SDK-15.05-x86-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2</span></span><br><span class="line">  <span class="comment">#SDK的下载连接,按需填写，需要什么平台，添加什么平台的sdk下载连接</span></span><br><span class="line"><span class="attr">install:</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">$TRAVIS_BUILD_DIR/local</span> <span class="string">;</span> <span class="string">cd</span> <span class="string">$TRAVIS_BUILD_DIR/local</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">wget</span> <span class="string">"http://us.archive.ubuntu.com/ubuntu/pool/main/c/ccache/ccache_3.1.6-1_amd64.deb"</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">dpkg</span> <span class="bullet">-x</span> <span class="string">*.deb</span> <span class="string">.</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">$TRAVIS_BUILD_DIR/cache</span> <span class="string">;</span> <span class="string">cd</span> <span class="string">$TRAVIS_BUILD_DIR/cache</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">wget</span> <span class="bullet">-c</span> <span class="string">$SDK_URL</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">$TRAVIS_BUILD_DIR/sdk</span> <span class="string">;</span> <span class="string">cd</span> <span class="string">$TRAVIS_BUILD_DIR/sdk</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">export</span> <span class="string">FILE=$TRAVIS_BUILD_DIR/cache/$(basename</span> <span class="string">$SDK_URL)</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">file</span> <span class="string">$FILE</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">tar</span> <span class="string">xjf</span> <span class="string">$FILE</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">cd</span> <span class="string">$TRAVIS_BUILD_DIR/sdk/OpenWrt-SDK-*</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">mkdir</span> <span class="string">package/$PACKAGE</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">ln</span> <span class="bullet">-s</span> <span class="string">$TRAVIS_BUILD_DIR/Makefile</span> <span class="string">package/$PACKAGE/</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">ln</span> <span class="bullet">-s</span> <span class="string">$TRAVIS_BUILD_DIR/src</span> <span class="string">package/$PACKAGE/</span></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">export</span> <span class="string">PATH=$TRAVIS_BUILD_DIR/local/usr/bin:$PATH</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">cd</span> <span class="string">$TRAVIS_BUILD_DIR/sdk/OpenWrt-SDK-*</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">"./scripts/feeds update packages &gt;/dev/null"</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">make</span> <span class="string">V=s</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">find</span> <span class="string">$TRAVIS_BUILD_DIR/sdk/OpenWrt-SDK-*/bin/</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">find</span> <span class="string">.</span> <span class="bullet">-name</span> <span class="string">*.ipk</span> <span class="bullet">-exec</span> <span class="string">cp</span> <span class="string">&#123;&#125;</span> <span class="string">$TRAVIS_BUILD_DIR</span> <span class="string">\;</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">cd</span> <span class="string">$TRAVIS_BUILD_DIR/</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">chmod</span> <span class="string">a+x</span> <span class="string">$TRAVIS_BUILD_DIR/deploy.sh</span></span><br><span class="line"><span class="attr">after_success:</span> <span class="string">"$TRAVIS_BUILD_DIR/deploy.sh"</span></span><br><span class="line"><span class="attr">before_deploy:</span> <span class="string">git</span> <span class="string">fetch</span> <span class="bullet">--tags</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  provider:</span> <span class="string">releases</span></span><br><span class="line"><span class="attr">  api_key:</span></span><br><span class="line"><span class="attr">    secure:</span> <span class="string">"bUcfHyjQDKvGbVKnbdqfkG/kCMpsU+VuoZxm7+9ckB+lhpHFLaN/xIKmnikNfcEpEbq8wCnnbbW4TOlF7sUVOCcKQ9mazgtZamcO+ZM09ig73rci2v7JYK7NLLJaxd1AWTWi8S6GSFgAIqucWxKdIGTONnTSkGzGjljFPtVBCLY6KCXeQHukrDjVMCBMp+k+rNYHP58OmjpJVrKG9kskF3BaRmkqkFrVDUeL1MCPDfMwprCpmImxW07xW7aWSGIs0CGttfbkVC+1vz5bJsFvqcF1qHlkmfTImumsc8DtDvGvdhb08xOb/DYueT43VFa2UHG2xglMLcF1/+4PqCC9eugoq0NgN16xHXG8HhAMKjBCr6tvcxhkLeYiYTGweZsfLfLQdcGirSe8TDhr1daedbazOPNiqGzy0aypGjCFPeyHxBzuPHAJixRmwVI+jZzs8a4vG+3GI5ZNf4U0uH08bhAHqvgILULJ0QliZc74h6+EYUYmLbf4M8MzRspLGh3GFh1+QUvm2+UhHWk5LuLGgi68X5ISUJQrEL+wm35m3o9MDnP47VgnELb+lGUx0bGOeuT0ywEQCROPNLso844lHXK/zVZ5HILo+RRMIE7eAcUCBPZa2fbil0SYhKhHZMQ+MOfXKIrO/djpW+cjv5k6sYeATi1R4UqHVFZqMvim64c="</span></span><br><span class="line">      <span class="comment"># Go to GitHub.com -&gt; Settings -&gt; Applications -&gt; Personal Access Tokens </span></span><br><span class="line">      <span class="comment"># —&gt; Create new token, and copy it to your clipboard</span></span><br><span class="line">      <span class="comment"># travis-encrypt -r username/reponame api_key(Personal Access Tokens)</span></span><br><span class="line">      <span class="comment"># e.g. travis-encrypt -r username/reponame 123459...</span></span><br><span class="line">      <span class="comment"># 注意！这里加密的内容不包含 「TOKEN=」</span></span><br><span class="line">      <span class="comment"># 直接加密123459...</span></span><br><span class="line">      <span class="comment"># encrypted api_key</span></span><br><span class="line">      <span class="comment"># Paste here</span></span><br><span class="line"><span class="attr">  skip_cleanup:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  file_glob:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  file:</span> <span class="string">"$TRAVIS_BUILD_DIR/*.ipk"</span></span><br><span class="line"><span class="attr">  on:</span></span><br><span class="line"><span class="attr">    tags:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">    all_branches:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>deploy.sh</li>
+</ul>
+<figure class="highlight bash"><figcaption><span>deploy.sh</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#filename:deploy.sh</span></span><br><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Deploy binaries built with travis-ci to GitHub Pages,</span></span><br><span class="line"><span class="comment"># where they can be accessed by OpenWrt opkg directly</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> /tmp/</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> https://<span class="variable">$&#123;USER&#125;</span>:<span class="variable">$&#123;TOKEN&#125;</span>@github.com/<span class="variable">$&#123;USER&#125;</span>/<span class="variable">$&#123;REPO&#125;</span>.git --branch gh-pages \</span><br><span class="line">--single-branch gh-pages &gt; /dev/null 2&gt;&amp;1 || <span class="built_in">exit</span> 1 <span class="comment"># so that the key does not leak to the logs in case of errors 防止在log中泄露TOKEN明文</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> gh-pages || <span class="built_in">exit</span> 1</span><br><span class="line"></span><br><span class="line">git config user.name <span class="string">"Travis CI"</span></span><br><span class="line">git config user.email <span class="string">"travis@noreply"</span></span><br><span class="line"></span><br><span class="line">cp <span class="variable">$TRAVIS_BUILD_DIR</span>/*ipk .</span><br><span class="line"><span class="variable">$TRAVIS_BUILD_DIR</span>/sdk/OpenWrt-SDK-*/scripts/ipkg-make-index.sh . &gt; Packages</span><br><span class="line">gzip -c Packages &gt; Packages.gz</span><br><span class="line"></span><br><span class="line">cat &gt; index.html &lt;&lt;EOF</span><br><span class="line">&lt;html&gt;&lt;body&gt;&lt;pre&gt;</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"src/gz announce http://<span class="variable">$&#123;USER&#125;</span>.github.io/<span class="variable">$&#123;PACKAGE&#125;</span>"</span> &gt;&gt; /etc/opkg.conf</span><br><span class="line">opkg update</span><br><span class="line">opkg install <span class="variable">$&#123;PACKAGE&#125;</span></span><br><span class="line">&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">DATE=$(date <span class="string">"+%Y-%m-%d"</span>)</span><br><span class="line">cat &gt; README.md &lt;&lt;EOF</span><br><span class="line">OpenWrt repository <span class="keyword">for</span> <span class="variable">$&#123;PACKAGE&#125;</span></span><br><span class="line">========</span><br><span class="line">Binaries built from this repository on <span class="variable">$DATE</span> can be downloaded from http://<span class="variable">$&#123;USER&#125;</span>.github.io/<span class="variable">$&#123;REPO&#125;</span>/.</span><br><span class="line">To install the <span class="variable">$&#123;PACKAGE&#125;</span> package, run</span><br><span class="line">\`\`\`</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"src/gz announce http://<span class="variable">$&#123;USER&#125;</span>.github.io/<span class="variable">$&#123;PACKAGE&#125;</span>"</span> &gt;&gt; /etc/opkg.conf</span><br><span class="line">opkg update</span><br><span class="line">opkg install <span class="variable">$&#123;PACKAGE&#125;</span></span><br><span class="line">\`\`\`</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">git add -A</span><br><span class="line"><span class="comment">#git pull</span></span><br><span class="line">git commit -a -m <span class="string">"Deploy Travis build <span class="variable">$TRAVIS_BUILD_NUMBER</span> to gh-pages"</span></span><br><span class="line"><span class="comment">#git push -fq origin gh-pages:gh-pages &gt; /dev/null 2&gt;&amp;1 || exit 1</span></span><br><span class="line">git push -fq origin gh-pages &gt; /dev/null 2&gt;&amp;1 || <span class="built_in">exit</span> 1 <span class="comment"># so that the key does not leak to the logs in case of errors防止在log中泄露TOKEN明文</span></span><br><span class="line"><span class="comment">#git push -f origin gh-pages:gh-pages</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">"Uploaded files to gh-pages\n"</span></span><br><span class="line"><span class="built_in">cd</span> -</span><br></pre></td></tr></table></figure>
+<h1 id="使用实例"><a href="#使用实例" class="headerlink" title="使用实例"></a>使用实例</h1><p><a href="https://github.com/leon0516/openwrt-mpu6050-example" target="_blank" rel="noopener">leon0516/openwrt-mpu6050-example</a><br><a href="https://travis-ci.org/leon0516/openwrt-mpu6050-example" target="_blank" rel="noopener">travis-ci.org/leon0516/openwrt-mpu6050-example</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Development </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> OpenWrt </tag>
+            
+            <tag> Linux </tag>
+            
+            <tag> Travis CI </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[OpenWrt编译过程记录]]></title>
+      <url>/2016/07/20/complie_openwrt_note/</url>
+      <content type="html"><![CDATA[<p>时隔半年多，我又再次鼓捣起来OpenWrt了，这次终于摸索出干货了。在次记录一下。<br><a id="more"></a></p>
+<h1 id="软硬件环境"><a href="#软硬件环境" class="headerlink" title="软硬件环境"></a>软硬件环境</h1><ul>
+<li>Hackintosh OSX10.11.5</li>
+<li>ThinkPad Windows10</li>
+<li>parallels Desktop</li>
+<li>Ubuntu14.04 桌面版</li>
+<li>WrtNode 1代</li>
+<li>MakerRouter （wrtnode底板）</li>
+</ul>
+<h1 id="常规编译"><a href="#常规编译" class="headerlink" title="常规编译"></a>常规编译</h1><h2 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h2><h3 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~$sudo apt-get install gcc g++ binutils patch bzip2 flex bison make autoconf gettext texinfo unzip sharutils git libncurses5-dev ncurses-term zlib1g-dev gawk libssl-dev python wget subversion xz-utils</span><br></pre></td></tr></table></figure>
+<p>Ubuntu64位系统还需</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~$sudo apt-get install lib32gcc1 libc6-dev-i386</span><br></pre></td></tr></table></figure>
+<h2 id="获取源码"><a href="#获取源码" class="headerlink" title="获取源码"></a>获取源码</h2><blockquote>
+<p>WIKI:<a href="https://dev.openwrt.org/wiki/GetSource" target="_blank" rel="noopener">GetSource</a></p>
+</blockquote>
+<p>为了提高速度，我把OpenWrt以及相关的package在Coding做了个镜像。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~$git clone https://git.coding.net/leon0516/openwrt-15.05.git</span><br><span class="line">leon@leon-ubuntu:~$cd openwrt-15.05</span><br><span class="line">leon@leon-ubuntu:~/openwrt-15.05$cat &gt; feeds.conf &lt;&lt; EOF</span><br><span class="line">&gt;src-git packages https://git.coding.net/leon0516/packages.git;for-15.05</span><br><span class="line">&gt;src-git luci https://git.coding.net/leon0516/luci.git;for-15.05</span><br><span class="line">&gt;src-git routing https://git.coding.net/leon0516/routing.git;for-15.05</span><br><span class="line">&gt;src-git telephony https://git.coding.net/leon0516/telephony.git;for-15.05</span><br><span class="line">&gt;src-git management https://git.coding.net/leon0516/management.git;for-15.05</span><br><span class="line">&gt;EOF</span><br></pre></td></tr></table></figure></p>
+<h2 id="更新相关feeds"><a href="#更新相关feeds" class="headerlink" title="更新相关feeds"></a>更新相关feeds</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~/openwrt-15.05$./scripts/feeds update -a </span><br><span class="line">leon@leon-ubuntu:~/openwrt-15.05$./scripts/feeds install -a</span><br></pre></td></tr></table></figure>
+<h2 id="检查编译环境"><a href="#检查编译环境" class="headerlink" title="检查编译环境"></a>检查编译环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~/openwrt-15.05$make defconfig</span><br></pre></td></tr></table></figure>
+<p>若提示缺少软件包或编译库等依赖，则按提示安装所缺软件包或库等即可</p>
+<h2 id="选择组件"><a href="#选择组件" class="headerlink" title="选择组件"></a>选择组件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~/openwrt-15.05$make menuconfig</span><br></pre></td></tr></table></figure>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make V=99 j=处理器数目+1</span><br></pre></td></tr></table></figure>
+<p>也可以直接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make V=99</span><br></pre></td></tr></table></figure>
+<p>编译并生成build.log文件并把相关错误高亮显示出来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -j 5 V=99 2&gt;&amp;1 | tee build.log | grep -i error  #4核处理器</span><br></pre></td></tr></table></figure>
+<p>我的CPU是6700K，4核4GHz。硬盘是SSD。编译时已经预下载好相关软件包，开启4核编译CPU占用率50%左右，编译完成耗时30分钟多点。大家可以对照自己电脑性能参考计算一下时间。影响时间的因素有CPU速度，硬盘读写速度（网络软件包下载已经提前完成，不影响编译速度）。</p>
+<h3 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h3><p>由于编译过程中会下载一些软件包，会消耗大量时间，在编译之前可以先预下载下来，以便节约时间。命令如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -j 10 download</span><br></pre></td></tr></table></figure></p>
+<p>下载的软件包会放在<code>dl</code>文件夹下，为了读者方便，我已打包dl文件夹放于网上以节约大家时间。<br>点击下载<a href="http://o9xqkc534.bkt.clouddn.com/ld.tar.gz" target="_blank" rel="noopener">ld.tar.gz</a></p>
+<p>生成的固件在/bin目录下</p>
+<h1 id="进阶编译"><a href="#进阶编译" class="headerlink" title="进阶编译"></a>进阶编译</h1><h2 id="修改默认波特率"><a href="#修改默认波特率" class="headerlink" title="修改默认波特率"></a>修改默认波特率</h2><p>由于Uboot的默认波特率是115200而OpenWrt系统的默认波特率是57600为了方便调试我们把系统波特率修改为115200.<br>在OpenWrt源码根目录编辑以下文件<code>target/linux/ramips/dts/mt7620n.dtsi</code>将<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chosen &#123;</span><br><span class="line">                bootargs = &quot;console=ttyS0,57600&quot;;</span><br><span class="line">        &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>修改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chosen &#123;</span><br><span class="line">                bootargs = &quot;console=ttyS0,115200&quot;;</span><br><span class="line">        &#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="默认开启WIFI"><a href="#默认开启WIFI" class="headerlink" title="默认开启WIFI"></a>默认开启WIFI</h2><p>由于OpenWrt默认关闭WIFI的，如何一编译好就默认开启WIFI呢？<br>我们只需要修改配置文件就OK了。方法如下：<br>打开<code>package/kernel/mac80211/files/lib/wifi/mac80211.sh</code>文件，大约在文件最后有如下代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">config wifi-device  radio$devidx</span><br><span class="line">        option type     mac80211</span><br><span class="line">        option channel  $&#123;channel&#125;</span><br><span class="line">        option hwmode   11$&#123;mode_band&#125;</span><br><span class="line">$dev_id</span><br><span class="line">$ht_capab</span><br><span class="line">        # REMOVE THIS LINE TO ENABLE WIFI:</span><br><span class="line">        #这里↑说的很清楚了，注释掉下面一行就行了</span><br><span class="line">        option disabled 1</span><br><span class="line"></span><br><span class="line">config wifi-iface</span><br><span class="line">        option device   radio$devidx</span><br><span class="line">        option network  lan</span><br><span class="line">        option mode     ap</span><br><span class="line">        option ssid     OpenWrt    #这里修改默认SSID SSID中不允许有空格</span><br><span class="line">        option encryption none</span><br><span class="line">#另外强调一点，配置文件都是以tab缩进</span><br></pre></td></tr></table></figure></p>
+<h2 id="ipk开发-amp-luci开发"><a href="#ipk开发-amp-luci开发" class="headerlink" title="ipk开发&amp;luci开发"></a>ipk开发&amp;luci开发</h2><p>另开一篇做记录，择日更新</p>
+<h1 id="注意"><a href="#注意" class="headerlink" title="注意:"></a>注意:</h1><h2 id="menuconfig说明"><a href="#menuconfig说明" class="headerlink" title="menuconfig说明"></a>menuconfig说明</h2><ul>
+<li><code>*号是编译进固件，M 是编译但是不编译进固件,生成 ipkg 文件</code>,路由器 flash 不够大的话要考虑尽量编译成模块</li>
+</ul>
+<ol>
+<li>选择Target System</li>
+<li>选择Target Profile</li>
+<li>LuCI-&gt;Collections-&gt;luci(可以通过网页设置路由器)</li>
+<li>LuCI-&gt;Translations-&gt;luci-i18n-chinese(中文界面)</li>
+<li>其余设置自行决定  </li>
+</ol>
+<h2 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明:"></a>界面说明:</h2><ul>
+<li>luci：WEB界面</li>
+<li>LuCI -&gt;Applications：应用软件的WEB界面、</li>
+<li>Base system：系统基础，里面有USB挂载 block-mount</li>
+<li>Kernel modules：内核模块，内容很多，不如文件系统等等按照自己需要的选吧</li>
+<li>Utilities：一些实用工具，比如自动挂载选项，无线开关等</li>
+</ul>
+<h2 id="硬改路由器"><a href="#硬改路由器" class="headerlink" title="硬改路由器"></a>硬改路由器</h2><ul>
+<li>这个择日更新</li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> Development </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> OpenWrt </tag>
+            
+            <tag> Linux </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[设置和取消git proxy]]></title>
+      <url>/2016/07/05/git_setting_proxy/</url>
+      <content type="html"><![CDATA[<p>最近不知怎么搞的，中国移动的手机网络和家里的宽带都无法使用github，只能通过fan.墙来访问，安装的github for Windows也无法使用。一直报错。<br><a id="more"></a><br>开启影梭后，打开git bash，然后使用以下命令设置代理。<br>```<br>git config –global http.proxy <a href="http://127.0.0.1:1080" target="_blank" rel="noopener">http://127.0.0.1:1080</a> #设置http代理</p>
+<p>git config –global https.proxy <a href="https://127.0.0.1:1080" target="_blank" rel="noopener">https://127.0.0.1:1080</a> #设置https代理</p>
+<p>git config –global –unset http.proxy #取消设置代理</p>
+<p>git config –global –unset https.proxy #取消设置代理</p>
+]]></content>
+      
+        <categories>
+            
+            <category> Development </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Git </tag>
+            
+            <tag> Proxy </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[黑苹果删除多余的clover启动项]]></title>
+      <url>/2016/05/09/hackinston_remove_extra_boot_entry/</url>
+      <content type="html"><![CDATA[<p>自己配了一台台式机，在安装黑苹果后，每次开机在BIOS中就会新增一个启动项，电脑几天用下来都多出来几十个启动项。于是Google好久才找到解决办法。于是记录一下。<br><a id="more"></a><br>这是我在tonymacx86发帖的内容，就直接复制过来了，都读的懂。</p>
+<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><p>Every time i restart my El Capitan osx i get another boot entry on bios.</p>
+<h1 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h1><p>not in windows but you can do it (as I did) under clover shell</p>
+<ul>
+<li>Enter EFI Shell.</li>
+<li>As shell loads, note the label of the HDD/SSD your efi and OS X are installed on. FS0 in my case. or type map to see it</li>
+<li>Then bcfg boot dump.</li>
+<li>VERY CAREFULLY add a new entry after the highest one in the list. I had to type <code>bcfg boot add 05 FS0:\EFI\CLOVER\CLOVERX64.EFI CloverBoot</code> w/o the quotes, where 05 was the new entry</li>
+<li>Then you can delete old bcfg entry that pointed to /BOOT/BOOTX64.EFI with <code>bcfg boot rm XX</code> where XX is the number identifier seen when u do bcfg boot dump</li>
+<li>Then, booted into OS X, mounted EFI, and renamed /BOOT to BOOT.bak</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://sourceforge.net/p/cloverefiboot/tickets/226/#d1a9/0222/8cc1" target="_blank" rel="noopener">https://sourceforge.net/p/cloverefiboot/tickets/226/#d1a9/0222/8cc1</a><br><a href="https://sourceforge.net/p/cloverefiboot/tickets/226/" target="_blank" rel="noopener">https://sourceforge.net/p/cloverefiboot/tickets/226/</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Other </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Hackinston </tag>
+            
+            <tag> Clover </tag>
+            
+        </tags>
+        
+    </entry>
+    
+  
+  
+</search>

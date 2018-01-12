@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Dev Life Log</title>
+  
+  <subtitle>learning and log</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://leondevlifelog.github.io/"/>
+  <updated>2018-01-12T04:00:31.688Z</updated>
+  <id>https://leondevlifelog.github.io/</id>
+  
+  <author>
+    <name>Leon</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>为小米4c编译LineageOS(CM/AOSP)14.1系统</title>
+    <link href="https://leondevlifelog.github.io/2017/07/31/build-lineageOS-for-xiaomi-4c/"/>
+    <id>https://leondevlifelog.github.io/2017/07/31/build-lineageOS-for-xiaomi-4c/</id>
+    <published>2017-07-31T05:46:03.000Z</published>
+    <updated>2018-01-12T04:00:31.688Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;既然决定往Android底层走了，不整一份源码怎么行。于是在昨天把LineageOS源码拉下来了，深入学习一下！&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="AOSP" scheme="https://leondevlifelog.github.io/categories/AOSP/"/>
+    
+    
+      <category term="AOSP" scheme="https://leondevlifelog.github.io/tags/AOSP/"/>
+    
+      <category term="LineageOS" scheme="https://leondevlifelog.github.io/tags/LineageOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>AOSP repo 下载源码出现错误</title>
+    <link href="https://leondevlifelog.github.io/2017/07/30/AOSPrepo%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF/"/>
+    <id>https://leondevlifelog.github.io/2017/07/30/AOSPrepo出现错误/</id>
+    <published>2017-07-30T07:44:09.000Z</published>
+    <updated>2018-01-12T04:00:31.680Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在下载LineageOS(CM/AOSP)源码的时候出现错误&lt;/p&gt;
+&lt;h1 id=&quot;错误日志&quot;&gt;&lt;a href=&quot;#错误日志&quot; class=&quot;headerlink&quot; title=&quot;错误日志&quot;&gt;&lt;/a&gt;错误日志&lt;/h1&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;error: .repo/manifests/: manifests checkout 31a4f417d1785e7420e5af2bb571f0e1f16da93a &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Traceback (most recent call last):&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  File &lt;span class=&quot;string&quot;&gt;&quot;/home/leon/LineageOS/.repo/repo/main.py&quot;&lt;/span&gt;, line 531, &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    _Main(sys.argv[1:])&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  File &lt;span class=&quot;string&quot;&gt;&quot;/home/leon/LineageOS/.repo/repo/main.py&quot;&lt;/span&gt;, line 507, &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; _Main&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    result = repo._Run(argv) or 0&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  File &lt;span class=&quot;string&quot;&gt;&quot;/home/leon/LineageOS/.repo/repo/main.py&quot;&lt;/span&gt;, line 180, &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; _Run&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    result = cmd.Execute(copts, cargs)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  File &lt;span class=&quot;string&quot;&gt;&quot;/home/leon/LineageOS/.repo/repo/subcmds/init.py&quot;&lt;/span&gt;, line 399, &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; Execute&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    self._SyncManifest(opt)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  File &lt;span class=&quot;string&quot;&gt;&quot;/home/leon/LineageOS/.repo/repo/subcmds/init.py&quot;&lt;/span&gt;, line 248, &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; _SyncManifest&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    m.Sync_LocalHalf(syncbuf)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  File &lt;span class=&quot;string&quot;&gt;&quot;/home/leon/LineageOS/.repo/repo/project.py&quot;&lt;/span&gt;, line 1399, &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; Sync_LocalHalf&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    upstream_gain = self._revlist(not_rev(HEAD), revid)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  File &lt;span class=&quot;string&quot;&gt;&quot;/home/leon/LineageOS/.repo/repo/project.py&quot;&lt;/span&gt;, line 2501, &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; _revlist&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;return&lt;/span&gt; self.work_git.rev_list(*a, **kw)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  File &lt;span class=&quot;string&quot;&gt;&quot;/home/leon/LineageOS/.repo/repo/project.py&quot;&lt;/span&gt;, line 2700, &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; rev_list&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    (self._project.name, str(args), p.stderr))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;error.GitError: manifests rev-list (&lt;span class=&quot;string&quot;&gt;&#39;^HEAD&#39;&lt;/span&gt;, u&lt;span class=&quot;string&quot;&gt;&#39;31a4f417d1785e7420e5af2bb571f0e1f16da93a&#39;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&#39;--&#39;&lt;/span&gt;): fatal: bad revision &lt;span class=&quot;string&quot;&gt;&#39;^HEAD&#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/categories/ErrorLog/"/>
+    
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/tags/ErrorLog/"/>
+    
+      <category term="AOSP" scheme="https://leondevlifelog.github.io/tags/AOSP/"/>
+    
+      <category term="Android" scheme="https://leondevlifelog.github.io/tags/Android/"/>
+    
+      <category term="LineageOS" scheme="https://leondevlifelog.github.io/tags/LineageOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>解决ScrollView嵌套RecyclerView显示不全</title>
+    <link href="https://leondevlifelog.github.io/2017/07/21/%E8%A7%A3%E5%86%B3ScrollView%E5%B5%8C%E5%A5%97RecyclerView%E6%98%BE%E7%A4%BA%E4%B8%8D%E5%85%A8/"/>
+    <id>https://leondevlifelog.github.io/2017/07/21/解决ScrollView嵌套RecyclerView显示不全/</id>
+    <published>2017-07-21T06:08:21.000Z</published>
+    <updated>2018-01-12T04:00:31.709Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;问题描述&quot;&gt;&lt;a href=&quot;#问题描述&quot; class=&quot;headerlink&quot; title=&quot;问题描述&quot;&gt;&lt;/a&gt;问题描述&lt;/h1&gt;&lt;p&gt;在ScrollView嵌套ListVIew、GirdView的时候都会出现显示不全的情况，对于这种情况只需要重写ListView和GridView的高度即可。&lt;br&gt;　　在Android6.0以下，ScrollView嵌套RecyclerView并不会出现显示不全的问题，但是在Android6.0及以上版本使用这种布局嵌套的时候就会出现RecyclerView显示不全的问题，解决方法很简单，只需要在RecyclerView的外面套上一层RelativeLayout即可，代码如下：&lt;br&gt;
+    
+    </summary>
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/categories/ErrorLog/"/>
+    
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/tags/ErrorLog/"/>
+    
+      <category term="Android" scheme="https://leondevlifelog.github.io/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Android手机局域网调试</title>
+    <link href="https://leondevlifelog.github.io/2017/07/19/Android%E6%89%8B%E6%9C%BA%E5%B1%80%E5%9F%9F%E7%BD%91%E8%B0%83%E8%AF%95/"/>
+    <id>https://leondevlifelog.github.io/2017/07/19/Android手机局域网调试/</id>
+    <published>2017-07-19T07:22:04.000Z</published>
+    <updated>2018-01-12T04:00:31.683Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;数据线忘记带到公司了，目前大部分同事都是用的iPhone手机，导致无法实机调试，于是想到了局域网调试。于是记录一下。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Development" scheme="https://leondevlifelog.github.io/categories/Development/"/>
+    
+    
+      <category term="Android" scheme="https://leondevlifelog.github.io/tags/Android/"/>
+    
+      <category term="adb" scheme="https://leondevlifelog.github.io/tags/adb/"/>
+    
+      <category term="WIFI" scheme="https://leondevlifelog.github.io/tags/WIFI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Support包版本不一致导致AndroidStudio报错</title>
+    <link href="https://leondevlifelog.github.io/2017/07/18/Support%E5%8C%85%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E5%AF%BC%E8%87%B4AndroidStudio%E6%8A%A5%E9%94%99/"/>
+    <id>https://leondevlifelog.github.io/2017/07/18/Support包版本不一致导致AndroidStudio报错/</id>
+    <published>2017-07-18T07:59:47.000Z</published>
+    <updated>2018-01-12T04:00:31.686Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;错误日志&quot;&gt;&lt;a href=&quot;#错误日志&quot; class=&quot;headerlink&quot; title=&quot;错误日志&quot;&gt;&lt;/a&gt;错误日志&lt;/h1&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;Error:Execution failed for task &amp;apos;:app:processDebugManifest&amp;apos;.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;gt; Manifest merger failed : Attribute meta-data#android.support.VERSION@value value=(25.3.1) from [com.android.support:design:25.3.1] AndroidManifest.xml:27:9-31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  	is also present at [com.android.support:support-v4:26.0.0-alpha1] AndroidManifest.xml:27:9-38 value=(26.0.0-alpha1).&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  	Suggestion: add &amp;apos;tools:replace=&amp;quot;android:value&amp;quot;&amp;apos; to &amp;lt;meta-data&amp;gt; element at AndroidManifest.xml:25:5-27:34 to override.&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/categories/ErrorLog/"/>
+    
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/tags/ErrorLog/"/>
+    
+      <category term="Android" scheme="https://leondevlifelog.github.io/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Nodejs安装/使用报权限错误</title>
+    <link href="https://leondevlifelog.github.io/2017/07/17/Nodejs%E5%AE%89%E8%A3%85-%E4%BD%BF%E7%94%A8%E6%8A%A5%E6%9D%83%E9%99%90%E9%94%99%E8%AF%AF/"/>
+    <id>https://leondevlifelog.github.io/2017/07/17/Nodejs安装-使用报权限错误/</id>
+    <published>2017-07-17T09:33:50.000Z</published>
+    <updated>2018-01-12T04:00:31.685Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;错误日志&quot;&gt;&lt;a href=&quot;#错误日志&quot; class=&quot;headerlink&quot; title=&quot;错误日志&quot;&gt;&lt;/a&gt;错误日志&lt;/h1&gt;&lt;p&gt;在安装新的nodejs模块或使用一些nodejs命令时会报权限不够的错误，日志类似下面：&lt;br&gt;
+    
+    </summary>
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/categories/ErrorLog/"/>
+    
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/tags/ErrorLog/"/>
+    
+      <category term="Nodejs" scheme="https://leondevlifelog.github.io/tags/Nodejs/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Linux下Android模拟器无法启动</title>
+    <link href="https://leondevlifelog.github.io/2017/07/17/Linux%E4%B8%8BAndroid%E6%A8%A1%E6%8B%9F%E5%99%A8%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8/"/>
+    <id>https://leondevlifelog.github.io/2017/07/17/Linux下Android模拟器无法启动/</id>
+    <published>2017-07-17T09:24:32.000Z</published>
+    <updated>2018-01-12T04:00:31.683Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;错误日志&quot;&gt;&lt;a href=&quot;#错误日志&quot; class=&quot;headerlink&quot; title=&quot;错误日志&quot;&gt;&lt;/a&gt;错误日志&lt;/h1&gt;&lt;p&gt;Linux下Android模拟器无法启动，报错找不到i965_dri.so&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/categories/ErrorLog/"/>
+    
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/tags/ErrorLog/"/>
+    
+      <category term="Android" scheme="https://leondevlifelog.github.io/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Plugin with id &#39;com.Android.application&#39; not found</title>
+    <link href="https://leondevlifelog.github.io/2017/07/14/plugin-with-id-com-android-application-not-found/"/>
+    <id>https://leondevlifelog.github.io/2017/07/14/plugin-with-id-com-android-application-not-found/</id>
+    <published>2017-07-14T02:45:30.000Z</published>
+    <updated>2018-01-12T04:00:31.700Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;错误日志&quot;&gt;&lt;a href=&quot;#错误日志&quot; class=&quot;headerlink&quot; title=&quot;错误日志&quot;&gt;&lt;/a&gt;错误日志&lt;/h1&gt;&lt;p&gt;这个错误是build.gradle造成的，我们打开文件&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;Error:(1, 0) Plugin with id &amp;apos;com.Android.application&amp;apos; not found.&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/categories/ErrorLog/"/>
+    
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/tags/ErrorLog/"/>
+    
+      <category term="Android" scheme="https://leondevlifelog.github.io/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>APK Installation failed with message Invalid File</title>
+    <link href="https://leondevlifelog.github.io/2017/07/12/apk-install-faile-with-message/"/>
+    <id>https://leondevlifelog.github.io/2017/07/12/apk-install-faile-with-message/</id>
+    <published>2017-07-12T05:36:39.000Z</published>
+    <updated>2018-01-12T04:00:31.687Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;错误信息如下&quot;&gt;&lt;a href=&quot;#错误信息如下&quot; class=&quot;headerlink&quot; title=&quot;错误信息如下:&quot;&gt;&lt;/a&gt;错误信息如下:&lt;/h1&gt;&lt;p&gt;利用Android studio debug时安装不上apk,一直报错,错误日志如下:&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;Installation failed with message Invalid File: D:\project\app\build\intermediates\split-apk\with_ImageProcessor\debug\slices\slice_0.apk. It is possible that this issue is resolved by uninstalling an existing version of the apk if it is present, and then re-installing.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;WARNING: Uninstalling will remove the application data!&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Do you want to uninstall the existing application?&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/categories/ErrorLog/"/>
+    
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/tags/ErrorLog/"/>
+    
+      <category term="Android" scheme="https://leondevlifelog.github.io/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基础语法-Kotlin自学1</title>
+    <link href="https://leondevlifelog.github.io/2017/07/11/%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95-Kotlin%E8%87%AA%E5%AD%A61/"/>
+    <id>https://leondevlifelog.github.io/2017/07/11/基础语法-Kotlin自学1/</id>
+    <published>2017-07-11T03:31:17.000Z</published>
+    <updated>2018-01-12T04:00:31.707Z</updated>
+    
+    <summary type="html">
+    
+      Kotlin学习笔记
+    
+    </summary>
+    
+      <category term="Development" scheme="https://leondevlifelog.github.io/categories/Development/"/>
+    
+    
+      <category term="Kotlin" scheme="https://leondevlifelog.github.io/tags/Kotlin/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>执行ssh-add时出现错误</title>
+    <link href="https://leondevlifelog.github.io/2017/07/11/ssh-key-add-error/"/>
+    <id>https://leondevlifelog.github.io/2017/07/11/ssh-key-add-error/</id>
+    <published>2017-07-11T02:11:48.000Z</published>
+    <updated>2018-01-12T04:00:31.702Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;执行&lt;code&gt;ssh-add /.ssh/id_rsa&lt;/code&gt;出现这个错误:&lt;code&gt;Could not open a connection to your authentication agent&lt;/code&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/categories/ErrorLog/"/>
+    
+    
+      <category term="ErrorLog" scheme="https://leondevlifelog.github.io/tags/ErrorLog/"/>
+    
+      <category term="ssh" scheme="https://leondevlifelog.github.io/tags/ssh/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>git知识点总结</title>
+    <link href="https://leondevlifelog.github.io/2017/06/25/git_command_review/"/>
+    <id>https://leondevlifelog.github.io/2017/06/25/git_command_review/</id>
+    <published>2017-06-25T11:19:14.000Z</published>
+    <updated>2018-01-12T04:00:31.693Z</updated>
+    
+    <summary type="html">
+    
+      git知识点总结
+    
+    </summary>
+    
+      <category term="Development" scheme="https://leondevlifelog.github.io/categories/Development/"/>
+    
+    
+      <category term="Git" scheme="https://leondevlifelog.github.io/tags/Git/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>借助Travis CI持续集成工具，自动编译OpenWrt平台ipk软件包</title>
+    <link href="https://leondevlifelog.github.io/2016/08/02/travis_ci-compile-openwrt-ipk/"/>
+    <id>https://leondevlifelog.github.io/2016/08/02/travis_ci-compile-openwrt-ipk/</id>
+    <published>2016-08-02T15:45:00.000Z</published>
+    <updated>2018-01-12T04:00:31.705Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;实现的功能&quot;&gt;&lt;a href=&quot;#实现的功能&quot; class=&quot;headerlink&quot; title=&quot;实现的功能&quot;&gt;&lt;/a&gt;实现的功能&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;push更改到github后触发编译&lt;/li&gt;
+&lt;li&gt;每次编译成功之后都会推送*.ipk到gh-pages分支&lt;/li&gt;
+&lt;li&gt;新建tag时，会触发编译并发布*.ipk文件到release页面&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="Development" scheme="https://leondevlifelog.github.io/categories/Development/"/>
+    
+    
+      <category term="OpenWrt" scheme="https://leondevlifelog.github.io/tags/OpenWrt/"/>
+    
+      <category term="Linux" scheme="https://leondevlifelog.github.io/tags/Linux/"/>
+    
+      <category term="Travis CI" scheme="https://leondevlifelog.github.io/tags/Travis-CI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>OpenWrt编译过程记录</title>
+    <link href="https://leondevlifelog.github.io/2016/07/20/complie_openwrt_note/"/>
+    <id>https://leondevlifelog.github.io/2016/07/20/complie_openwrt_note/</id>
+    <published>2016-07-20T07:31:00.000Z</published>
+    <updated>2018-01-12T04:00:31.691Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;时隔半年多，我又再次鼓捣起来OpenWrt了，这次终于摸索出干货了。在次记录一下。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Development" scheme="https://leondevlifelog.github.io/categories/Development/"/>
+    
+    
+      <category term="OpenWrt" scheme="https://leondevlifelog.github.io/tags/OpenWrt/"/>
+    
+      <category term="Linux" scheme="https://leondevlifelog.github.io/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>设置和取消git proxy</title>
+    <link href="https://leondevlifelog.github.io/2016/07/05/git_setting_proxy/"/>
+    <id>https://leondevlifelog.github.io/2016/07/05/git_setting_proxy/</id>
+    <published>2016-07-05T02:19:43.000Z</published>
+    <updated>2018-01-12T04:00:31.695Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近不知怎么搞的，中国移动的手机网络和家里的宽带都无法使用github，只能通过fan.墙来访问，安装的github for Windows也无法使用。一直报错。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Development" scheme="https://leondevlifelog.github.io/categories/Development/"/>
+    
+    
+      <category term="Git" scheme="https://leondevlifelog.github.io/tags/Git/"/>
+    
+      <category term="Proxy" scheme="https://leondevlifelog.github.io/tags/Proxy/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>黑苹果删除多余的clover启动项</title>
+    <link href="https://leondevlifelog.github.io/2016/05/09/hackinston_remove_extra_boot_entry/"/>
+    <id>https://leondevlifelog.github.io/2016/05/09/hackinston_remove_extra_boot_entry/</id>
+    <published>2016-05-09T14:19:43.000Z</published>
+    <updated>2018-01-12T04:00:31.698Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;自己配了一台台式机，在安装黑苹果后，每次开机在BIOS中就会新增一个启动项，电脑几天用下来都多出来几十个启动项。于是Google好久才找到解决办法。于是记录一下。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Other" scheme="https://leondevlifelog.github.io/categories/Other/"/>
+    
+    
+      <category term="Hackinston" scheme="https://leondevlifelog.github.io/tags/Hackinston/"/>
+    
+      <category term="Clover" scheme="https://leondevlifelog.github.io/tags/Clover/"/>
+    
+  </entry>
+  
+</feed>

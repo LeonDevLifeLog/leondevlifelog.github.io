@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+
+var gitment = new Gitment({
+  id: window.location.pathname, // 可选。默认为 location.href
+  owner: 'LeonDevLifeLog',
+  repo: 'leondevlifelog.github.io',
+  oauth: {
+    client_id: '6615b88881f81c1d65d3',
+    client_secret: '7714059be62a5c488cbbb70a0e7af6468a04350c',
+  },
+})
+</script>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="OpenWrt编译过程记录"/>
+
+
+
+
+  <meta name="keywords" content="OpenWrt,Linux," />
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Dev Life Log">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+
+
+
+<link rel="canonical" href="https://leondevlifelog.github.io/2016/07/20/complie_openwrt_note/"/>
+
+
+<meta name="description" content="时隔半年多，我又再次鼓捣起来OpenWrt了，这次终于摸索出干货了。在次记录一下。">
+<meta name="keywords" content="OpenWrt,Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenWrt编译过程记录">
+<meta property="og:url" content="https://leondevlifelog.github.io/2016/07/20/complie_openwrt_note/index.html">
+<meta property="og:site_name" content="Dev Life Log">
+<meta property="og:description" content="时隔半年多，我又再次鼓捣起来OpenWrt了，这次终于摸索出干货了。在次记录一下。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2018-01-12T04:00:31.691Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenWrt编译过程记录">
+<meta name="twitter:description" content="时隔半年多，我又再次鼓捣起来OpenWrt了，这次终于摸索出干货了。在次记录一下。">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+
+<script>
+  var CONFIG = {
+    search: true,
+    searchPath: "/search.xml",
+    fancybox: true,
+    toc: true,
+  }
+</script>
+
+
+
+
+  
+
+
+
+    <title> OpenWrt编译过程记录 · Dev Life Log </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Dev Life Log</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
+      <a href="/categories">
+        <li class="mobile-menu-item">
+          
+          
+            Categories
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            About
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Dev Life Log</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/categories">
+            
+            
+              分类
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+      
+        <li class="menu-search">
+          <form>
+            <i class="iconfont icon-search" id="open-search"></i>
+            <input type="text" class="search-input" id="search-input" />
+            <i class="iconfont icon-close" id="close-search"></i>
+          </form>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          OpenWrt编译过程记录
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2016年7月20日
+        </span>
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#软硬件环境"><span class="toc-text">软硬件环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常规编译"><span class="toc-text">常规编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装环境"><span class="toc-text">安装环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Ubuntu"><span class="toc-text">Ubuntu</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#获取源码"><span class="toc-text">获取源码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更新相关feeds"><span class="toc-text">更新相关feeds</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#检查编译环境"><span class="toc-text">检查编译环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#选择组件"><span class="toc-text">选择组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译"><span class="toc-text">编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#tips"><span class="toc-text">tips</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#进阶编译"><span class="toc-text">进阶编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#修改默认波特率"><span class="toc-text">修改默认波特率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#默认开启WIFI"><span class="toc-text">默认开启WIFI</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ipk开发-amp-luci开发"><span class="toc-text">ipk开发&amp;luci开发</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意"><span class="toc-text">注意:</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#menuconfig说明"><span class="toc-text">menuconfig说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#界面说明"><span class="toc-text">界面说明:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#硬改路由器"><span class="toc-text">硬改路由器</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <p>时隔半年多，我又再次鼓捣起来OpenWrt了，这次终于摸索出干货了。在次记录一下。<br><a id="more"></a></p>
+<h1 id="软硬件环境"><a href="#软硬件环境" class="headerlink" title="软硬件环境"></a>软硬件环境</h1><ul>
+<li>Hackintosh OSX10.11.5</li>
+<li>ThinkPad Windows10</li>
+<li>parallels Desktop</li>
+<li>Ubuntu14.04 桌面版</li>
+<li>WrtNode 1代</li>
+<li>MakerRouter （wrtnode底板）</li>
+</ul>
+<h1 id="常规编译"><a href="#常规编译" class="headerlink" title="常规编译"></a>常规编译</h1><h2 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h2><h3 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~$sudo apt-get install gcc g++ binutils patch bzip2 flex bison make autoconf gettext texinfo unzip sharutils git libncurses5-dev ncurses-term zlib1g-dev gawk libssl-dev python wget subversion xz-utils</span><br></pre></td></tr></table></figure>
+<p>Ubuntu64位系统还需</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~$sudo apt-get install lib32gcc1 libc6-dev-i386</span><br></pre></td></tr></table></figure>
+<h2 id="获取源码"><a href="#获取源码" class="headerlink" title="获取源码"></a>获取源码</h2><blockquote>
+<p>WIKI:<a href="https://dev.openwrt.org/wiki/GetSource" target="_blank" rel="noopener">GetSource</a></p>
+</blockquote>
+<p>为了提高速度，我把OpenWrt以及相关的package在Coding做了个镜像。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~$git clone https://git.coding.net/leon0516/openwrt-15.05.git</span><br><span class="line">leon@leon-ubuntu:~$cd openwrt-15.05</span><br><span class="line">leon@leon-ubuntu:~/openwrt-15.05$cat &gt; feeds.conf &lt;&lt; EOF</span><br><span class="line">&gt;src-git packages https://git.coding.net/leon0516/packages.git;for-15.05</span><br><span class="line">&gt;src-git luci https://git.coding.net/leon0516/luci.git;for-15.05</span><br><span class="line">&gt;src-git routing https://git.coding.net/leon0516/routing.git;for-15.05</span><br><span class="line">&gt;src-git telephony https://git.coding.net/leon0516/telephony.git;for-15.05</span><br><span class="line">&gt;src-git management https://git.coding.net/leon0516/management.git;for-15.05</span><br><span class="line">&gt;EOF</span><br></pre></td></tr></table></figure></p>
+<h2 id="更新相关feeds"><a href="#更新相关feeds" class="headerlink" title="更新相关feeds"></a>更新相关feeds</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~/openwrt-15.05$./scripts/feeds update -a </span><br><span class="line">leon@leon-ubuntu:~/openwrt-15.05$./scripts/feeds install -a</span><br></pre></td></tr></table></figure>
+<h2 id="检查编译环境"><a href="#检查编译环境" class="headerlink" title="检查编译环境"></a>检查编译环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~/openwrt-15.05$make defconfig</span><br></pre></td></tr></table></figure>
+<p>若提示缺少软件包或编译库等依赖，则按提示安装所缺软件包或库等即可</p>
+<h2 id="选择组件"><a href="#选择组件" class="headerlink" title="选择组件"></a>选择组件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">leon@leon-ubuntu:~/openwrt-15.05$make menuconfig</span><br></pre></td></tr></table></figure>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make V=99 j=处理器数目+1</span><br></pre></td></tr></table></figure>
+<p>也可以直接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make V=99</span><br></pre></td></tr></table></figure>
+<p>编译并生成build.log文件并把相关错误高亮显示出来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -j 5 V=99 2&gt;&amp;1 | tee build.log | grep -i error  #4核处理器</span><br></pre></td></tr></table></figure>
+<p>我的CPU是6700K，4核4GHz。硬盘是SSD。编译时已经预下载好相关软件包，开启4核编译CPU占用率50%左右，编译完成耗时30分钟多点。大家可以对照自己电脑性能参考计算一下时间。影响时间的因素有CPU速度，硬盘读写速度（网络软件包下载已经提前完成，不影响编译速度）。</p>
+<h3 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h3><p>由于编译过程中会下载一些软件包，会消耗大量时间，在编译之前可以先预下载下来，以便节约时间。命令如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -j 10 download</span><br></pre></td></tr></table></figure></p>
+<p>下载的软件包会放在<code>dl</code>文件夹下，为了读者方便，我已打包dl文件夹放于网上以节约大家时间。<br>点击下载<a href="http://o9xqkc534.bkt.clouddn.com/ld.tar.gz" target="_blank" rel="noopener">ld.tar.gz</a></p>
+<p>生成的固件在/bin目录下</p>
+<h1 id="进阶编译"><a href="#进阶编译" class="headerlink" title="进阶编译"></a>进阶编译</h1><h2 id="修改默认波特率"><a href="#修改默认波特率" class="headerlink" title="修改默认波特率"></a>修改默认波特率</h2><p>由于Uboot的默认波特率是115200而OpenWrt系统的默认波特率是57600为了方便调试我们把系统波特率修改为115200.<br>在OpenWrt源码根目录编辑以下文件<code>target/linux/ramips/dts/mt7620n.dtsi</code>将<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chosen &#123;</span><br><span class="line">                bootargs = &quot;console=ttyS0,57600&quot;;</span><br><span class="line">        &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>修改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chosen &#123;</span><br><span class="line">                bootargs = &quot;console=ttyS0,115200&quot;;</span><br><span class="line">        &#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="默认开启WIFI"><a href="#默认开启WIFI" class="headerlink" title="默认开启WIFI"></a>默认开启WIFI</h2><p>由于OpenWrt默认关闭WIFI的，如何一编译好就默认开启WIFI呢？<br>我们只需要修改配置文件就OK了。方法如下：<br>打开<code>package/kernel/mac80211/files/lib/wifi/mac80211.sh</code>文件，大约在文件最后有如下代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">config wifi-device  radio$devidx</span><br><span class="line">        option type     mac80211</span><br><span class="line">        option channel  $&#123;channel&#125;</span><br><span class="line">        option hwmode   11$&#123;mode_band&#125;</span><br><span class="line">$dev_id</span><br><span class="line">$ht_capab</span><br><span class="line">        # REMOVE THIS LINE TO ENABLE WIFI:</span><br><span class="line">        #这里↑说的很清楚了，注释掉下面一行就行了</span><br><span class="line">        option disabled 1</span><br><span class="line"></span><br><span class="line">config wifi-iface</span><br><span class="line">        option device   radio$devidx</span><br><span class="line">        option network  lan</span><br><span class="line">        option mode     ap</span><br><span class="line">        option ssid     OpenWrt    #这里修改默认SSID SSID中不允许有空格</span><br><span class="line">        option encryption none</span><br><span class="line">#另外强调一点，配置文件都是以tab缩进</span><br></pre></td></tr></table></figure></p>
+<h2 id="ipk开发-amp-luci开发"><a href="#ipk开发-amp-luci开发" class="headerlink" title="ipk开发&amp;luci开发"></a>ipk开发&amp;luci开发</h2><p>另开一篇做记录，择日更新</p>
+<h1 id="注意"><a href="#注意" class="headerlink" title="注意:"></a>注意:</h1><h2 id="menuconfig说明"><a href="#menuconfig说明" class="headerlink" title="menuconfig说明"></a>menuconfig说明</h2><ul>
+<li><code>*号是编译进固件，M 是编译但是不编译进固件,生成 ipkg 文件</code>,路由器 flash 不够大的话要考虑尽量编译成模块</li>
+</ul>
+<ol>
+<li>选择Target System</li>
+<li>选择Target Profile</li>
+<li>LuCI-&gt;Collections-&gt;luci(可以通过网页设置路由器)</li>
+<li>LuCI-&gt;Translations-&gt;luci-i18n-chinese(中文界面)</li>
+<li>其余设置自行决定  </li>
+</ol>
+<h2 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明:"></a>界面说明:</h2><ul>
+<li>luci：WEB界面</li>
+<li>LuCI -&gt;Applications：应用软件的WEB界面、</li>
+<li>Base system：系统基础，里面有USB挂载 block-mount</li>
+<li>Kernel modules：内核模块，内容很多，不如文件系统等等按照自己需要的选吧</li>
+<li>Utilities：一些实用工具，比如自动挂载选项，无线开关等</li>
+</ul>
+<h2 id="硬改路由器"><a href="#硬改路由器" class="headerlink" title="硬改路由器"></a>硬改路由器</h2><ul>
+<li>这个择日更新</li>
+</ul>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>作者: </span>
+      <span>Leon</span>
+    </p>
+    <p class="copyright-item">
+      <span>来源: </span>
+      <a href="https://leondevlifelog.github.io">https://leondevlifelog.github.io</a>
+    </p>
+    <p class="copyright-item">
+      <span>链接: </span>
+      <a href="https://leondevlifelog.github.io/2016/07/20/complie_openwrt_note/">https://leondevlifelog.github.io/2016/07/20/complie_openwrt_note/</a>
+    </p>
+
+    <p class="copyright-item lincese">
+      
+      本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+    </p>
+  </div>
+
+
+
+      
+      
+  <div class="post-reward">
+    <input type="checkbox" name="reward" id="reward" hidden />
+    <label class="reward-button" for="reward">赞赏支持</label>
+    <input type="checkbox" name="commentsbox" id="commentsbox" hidden />
+    <label class="comments-button" for="commentsbox">评论一下</label>
+    <div class="qr-code">
+      
+      
+        <label class="qr-code-image" for="reward">
+          <img class="image" src="/image/reward/wechat.png" title="wechat">
+        </label>
+      
+      
+        <label class="qr-code-image" for="reward">
+          <img class="image" src="/image/reward/alipay.png" title="alipay">
+        </label>
+      
+    </div>
+    <div  class="comments-box" id="comments-box">
+    
+    </div>
+  </div>
+
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/OpenWrt/">OpenWrt</a>
+            
+              <a href="/tags/Linux/">Linux</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/08/02/travis_ci-compile-openwrt-ipk/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">借助Travis CI持续集成工具，自动编译OpenWrt平台ipk软件包</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/07/05/git_setting_proxy/">
+        <span class="next-text nav-default">设置和取消git proxy</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+  
+    <script>
+      gitment.render(document.getElementById("comments-box"));
+    </script>
+  
+
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:leondevlifelog@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://twitter.com/leondevlifelog" class="iconfont icon-twitter" title="twitter"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/LeonDevLifeLog" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Leon</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+
+  
+  
+
+
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
+
+    
+  <script type="text/html" id="search-result">
+    <article class="post">
+      <header class="post-header">
+        <h1 class="post-title">
+          <a href="$url$" class="post-link">
+            $title$
+          </a>
+        </h1>
+      </header>
+      <div class="post-content">
+        $content$
+        <div class="read-more">
+          <a href="$url$" class="read-more-link">
+            阅读更多
+          </a>
+        </div>
+      </div>
+    </article>
+  </script>
+  <script type="text/html" id="no-search-result">
+    <div class="no-result">
+      <h2>No result found!</h2>
+    </div>
+  </script>
+  <script type="text/javascript" src="/js/src/search.js?v=2.4.x"></script>
+
+  </body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+
+var gitment = new Gitment({
+  id: window.location.pathname, // 可选。默认为 location.href
+  owner: 'LeonDevLifeLog',
+  repo: 'leondevlifelog.github.io',
+  oauth: {
+    client_id: '6615b88881f81c1d65d3',
+    client_secret: '7714059be62a5c488cbbb70a0e7af6468a04350c',
+  },
+})
+</script>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="learning and log"/>
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Dev Life Log">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+
+
+
+<link rel="canonical" href="https://leondevlifelog.github.io/"/>
+
+
+<meta name="description" content="learning and log">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dev Life Log">
+<meta property="og:url" content="https://leondevlifelog.github.io/index.html">
+<meta property="og:site_name" content="Dev Life Log">
+<meta property="og:description" content="learning and log">
+<meta property="og:locale" content="zh-cn">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dev Life Log">
+<meta name="twitter:description" content="learning and log">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+
+<script>
+  var CONFIG = {
+    search: true,
+    searchPath: "/search.xml",
+    fancybox: true,
+    toc: true,
+  }
+</script>
+
+
+
+
+  
+
+
+
+    <title> Dev Life Log </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Dev Life Log</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
+      <a href="/categories">
+        <li class="mobile-menu-item">
+          
+          
+            Categories
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            About
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Dev Life Log</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/categories">
+            
+            
+              分类
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+      
+        <li class="menu-search">
+          <form>
+            <i class="iconfont icon-search" id="open-search"></i>
+            <input type="text" class="search-input" id="search-input" />
+            <i class="iconfont icon-close" id="close-search"></i>
+          </form>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  <section id="posts" class="posts">
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/31/build-lineageOS-for-xiaomi-4c/">为小米4c编译LineageOS(CM/AOSP)14.1系统</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月31日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>既然决定往Android底层走了，不整一份源码怎么行。于是在昨天把LineageOS源码拉下来了，深入学习一下！</p>
+          <div class="read-more">
+            <a href="/2017/07/31/build-lineageOS-for-xiaomi-4c/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/30/AOSPrepo出现错误/">AOSP repo 下载源码出现错误</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月30日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>在下载LineageOS(CM/AOSP)源码的时候出现错误</p>
+<h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">error: .repo/manifests/: manifests checkout 31a4f417d1785e7420e5af2bb571f0e1f16da93a </span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/main.py"</span>, line 531, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    _Main(sys.argv[1:])</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/main.py"</span>, line 507, <span class="keyword">in</span> _Main</span><br><span class="line">    result = repo._Run(argv) or 0</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/main.py"</span>, line 180, <span class="keyword">in</span> _Run</span><br><span class="line">    result = cmd.Execute(copts, cargs)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/subcmds/init.py"</span>, line 399, <span class="keyword">in</span> Execute</span><br><span class="line">    self._SyncManifest(opt)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/subcmds/init.py"</span>, line 248, <span class="keyword">in</span> _SyncManifest</span><br><span class="line">    m.Sync_LocalHalf(syncbuf)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/project.py"</span>, line 1399, <span class="keyword">in</span> Sync_LocalHalf</span><br><span class="line">    upstream_gain = self._revlist(not_rev(HEAD), revid)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/project.py"</span>, line 2501, <span class="keyword">in</span> _revlist</span><br><span class="line">    <span class="built_in">return</span> self.work_git.rev_list(*a, **kw)</span><br><span class="line">  File <span class="string">"/home/leon/LineageOS/.repo/repo/project.py"</span>, line 2700, <span class="keyword">in</span> rev_list</span><br><span class="line">    (self._project.name, str(args), p.stderr))</span><br><span class="line">error.GitError: manifests rev-list (<span class="string">'^HEAD'</span>, u<span class="string">'31a4f417d1785e7420e5af2bb571f0e1f16da93a'</span>, <span class="string">'--'</span>): fatal: bad revision <span class="string">'^HEAD'</span></span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2017/07/30/AOSPrepo出现错误/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/21/解决ScrollView嵌套RecyclerView显示不全/">解决ScrollView嵌套RecyclerView显示不全</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月21日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>在ScrollView嵌套ListVIew、GirdView的时候都会出现显示不全的情况，对于这种情况只需要重写ListView和GridView的高度即可。<br>　　在Android6.0以下，ScrollView嵌套RecyclerView并不会出现显示不全的问题，但是在Android6.0及以上版本使用这种布局嵌套的时候就会出现RecyclerView显示不全的问题，解决方法很简单，只需要在RecyclerView的外面套上一层RelativeLayout即可，代码如下：<br>
+          <div class="read-more">
+            <a href="/2017/07/21/解决ScrollView嵌套RecyclerView显示不全/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/19/Android手机局域网调试/">Android手机局域网调试</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月19日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>数据线忘记带到公司了，目前大部分同事都是用的iPhone手机，导致无法实机调试，于是想到了局域网调试。于是记录一下。</p>
+          <div class="read-more">
+            <a href="/2017/07/19/Android手机局域网调试/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/18/Support包版本不一致导致AndroidStudio报错/">Support包版本不一致导致AndroidStudio报错</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月18日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Error:Execution failed for task &apos;:app:processDebugManifest&apos;.</span><br><span class="line">&gt; Manifest merger failed : Attribute meta-data#android.support.VERSION@value value=(25.3.1) from [com.android.support:design:25.3.1] AndroidManifest.xml:27:9-31</span><br><span class="line">  	is also present at [com.android.support:support-v4:26.0.0-alpha1] AndroidManifest.xml:27:9-38 value=(26.0.0-alpha1).</span><br><span class="line">  	Suggestion: add &apos;tools:replace=&quot;android:value&quot;&apos; to &lt;meta-data&gt; element at AndroidManifest.xml:25:5-27:34 to override.</span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2017/07/18/Support包版本不一致导致AndroidStudio报错/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/17/Nodejs安装-使用报权限错误/">Nodejs安装/使用报权限错误</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月17日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><p>在安装新的nodejs模块或使用一些nodejs命令时会报权限不够的错误，日志类似下面：<br>
+          <div class="read-more">
+            <a href="/2017/07/17/Nodejs安装-使用报权限错误/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/17/Linux下Android模拟器无法启动/">Linux下Android模拟器无法启动</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月17日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><p>Linux下Android模拟器无法启动，报错找不到i965_dri.so</p>
+          <div class="read-more">
+            <a href="/2017/07/17/Linux下Android模拟器无法启动/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/14/plugin-with-id-com-android-application-not-found/">Plugin with id 'com.Android.application' not found</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月14日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="错误日志"><a href="#错误日志" class="headerlink" title="错误日志"></a>错误日志</h1><p>这个错误是build.gradle造成的，我们打开文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error:(1, 0) Plugin with id &apos;com.Android.application&apos; not found.</span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2017/07/14/plugin-with-id-com-android-application-not-found/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/12/apk-install-faile-with-message/">APK Installation failed with message Invalid File</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月12日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h1 id="错误信息如下"><a href="#错误信息如下" class="headerlink" title="错误信息如下:"></a>错误信息如下:</h1><p>利用Android studio debug时安装不上apk,一直报错,错误日志如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Installation failed with message Invalid File: D:\project\app\build\intermediates\split-apk\with_ImageProcessor\debug\slices\slice_0.apk. It is possible that this issue is resolved by uninstalling an existing version of the apk if it is present, and then re-installing.</span><br><span class="line"></span><br><span class="line">WARNING: Uninstalling will remove the application data!</span><br><span class="line"></span><br><span class="line">Do you want to uninstall the existing application?</span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2017/07/12/apk-install-faile-with-message/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2017/07/11/基础语法-Kotlin自学1/">基础语法-Kotlin自学1</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年7月11日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>Kotlin学习笔记</p>
+          <div class="read-more">
+            <a href="/2017/07/11/基础语法-Kotlin自学1/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+  </section>
+
+  
+  <nav class="pagination">
+    
+    
+      <a class="next" href="/page/2/">
+        <span class="next-text">下一页</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+
+          </div>
+          
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:leondevlifelog@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://twitter.com/leondevlifelog" class="iconfont icon-twitter" title="twitter"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/LeonDevLifeLog" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Leon</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
+
+    
+  <script type="text/html" id="search-result">
+    <article class="post">
+      <header class="post-header">
+        <h1 class="post-title">
+          <a href="$url$" class="post-link">
+            $title$
+          </a>
+        </h1>
+      </header>
+      <div class="post-content">
+        $content$
+        <div class="read-more">
+          <a href="$url$" class="read-more-link">
+            阅读更多
+          </a>
+        </div>
+      </div>
+    </article>
+  </script>
+  <script type="text/html" id="no-search-result">
+    <div class="no-result">
+      <h2>No result found!</h2>
+    </div>
+  </script>
+  <script type="text/javascript" src="/js/src/search.js?v=2.4.x"></script>
+
+  </body>
+</html>
